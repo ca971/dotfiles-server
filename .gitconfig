@@ -1,0 +1,19 @@
+[user]
+	name = ca971
+	email = discretgwad@gmail.com
+
+[alias]
+	name = config --get user.name
+  email = config --get user.email
+	ba = branch -a
+	br = branch
+	branches = branch -a
+	ci = commit
+	co = checkout
+	ls = ls-files
+	remotes = remote -v
+	s = status
+	st = status
+
+[core]
+	excludesfile = ~/.gitignore_global
