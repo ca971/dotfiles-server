@@ -21,26 +21,26 @@ endif
 " Colorscheme variable"{{{
 let g:vimrc_color_scheme = 'molokai dark'
 
-if !has('gui_running')
-  let g:solarized_termcolors = 256
-  if $TERM == "xterm-256color" || $TERM == "screen-256color" || $COLORTERM == "gnome-terminal"
-    set t_Co=256
-  elseif has("terminfo")
-    let g:vimrc_color_scheme = 'default dark'
-    set t_Co=8
-    set t_Sf=[3%p1%dm
-    set t_Sb=[4%p1%dm
-  else
-    let g:vimrc_color_scheme = 'default dark'
-    set t_Co=8
-    set t_Sf=[3%dm
-    set t_Sb=[4%dm
-  endif
-  " Disable Background Color Erase when within tmux - https://stackoverflow.com/q/6427650/102704
-  if $TMUX != ""
-    set t_ut=
-  endif
-endif
+"if !has('gui_running')
+"  let g:solarized_termcolors = 256
+"  if $TERM == 'xterm-256color' || $TERM == 'screen-256color' || $COLORTERM == 'gnome-terminal'
+"    set t_Co=256
+"  elseif has("terminfo")
+"    let g:vimrc_color_scheme = 'default dark'
+"    set t_Co=8
+"    set t_Sf=[3%p1%dm
+"    set t_Sb=[4%p1%dm
+"  else
+"    let g:vimrc_color_scheme = 'default dark'
+"    set t_Co=8
+"    set t_Sf=[3%dm
+"    set t_Sb=[4%dm
+"  endif
+"  " Disable Background Color Erase when within tmux - https://stackoverflow.com/q/6427650/102704
+"  if $TMUX != ""
+"    set t_ut=
+"  endif
+"endif
 "}}}
 " Functions"{{{
 " function! source_file_if_exists(file)"{{{
@@ -153,7 +153,6 @@ set textwidth=0 " To disable the cit-off at a column number
 "let &colorcolumn="+1,".join(range(120,999),",")
 "set formatoptions+=a " Dynamycally resize a paragraph when any change is made
 set nowrap " Not wrap lines or text
-set showbreak=… " Gives indication when a line is wrapped (<c-v>u 2026 : to fill with unicode character)
 set linebreak " Not break in the middle of a word (work only if nolist is set)
 set whichwrap+=<,>,h,l " Allow '< (left arrow),> (right arrow),h,l' keys that move cursor to previous/next line }}} Command mode{{{
 set showcmd " Show partial commands in statusline
@@ -167,7 +166,7 @@ set wildignore+=tags,*.tags
 set wildignorecase
 set wildmenu
 set wildmode=list:longest,full
-set listchars=tab:→\ ,eol:↵,trail:·,extends:↷,precedes:↶
+"set listchars=tab:→\ ,eol:↵,trail:·,extends:↷,precedes:↶
 "}}}
 " Behaviour{{{
 set number relativenumber " Line number / Relative number on

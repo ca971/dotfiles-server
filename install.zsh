@@ -72,7 +72,7 @@ for item in bin/* ; do
   symlink "$basedir/$item" "$bindir/$(basename $item)"
 done
 
-f which tmux >/dev/null 2>&1 ; then
+if which tmux >/dev/null 2>&1 ; then
   echo "Setting up tmux..."
   tpm="$HOME/.tmux/plugins/tpm"
   if [ -e "$tpm" ]; then
@@ -88,6 +88,14 @@ f which tmux >/dev/null 2>&1 ; then
 else
   echo "Skipping tmux setup because tmux isn't installed."
 fi
+
+echo "Cloning oh-my-zsh"
+sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+echo "Cloning spacehip-prompt"
+git clone -q https://github.com/spaceship-prompt/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt" --depth=1
+ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
+git clone -q https://github.com/zsh-users/zsh-autosuggestions.git
 
 postinstall="$HOME/.postinstall"
 if [ -e "$postinstall" ]; then
@@ -105,4 +113,4 @@ fi
 
 echo "Done."
 
-} # This ensures the entire script is downloaded.
+} # This ensures the entire script is downloaded
