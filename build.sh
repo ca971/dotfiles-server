@@ -71,7 +71,7 @@ for item in .* ; do
       ;;
   esac
 done
-#symlink "$basedir/.vim/vimrc" "$HOME/.vimrc"
+symlink "$basedir/.vim/.vimrc" "$HOME/.vimrc"
 #symlink "$basedir/.vim/gvimrc" "$HOME/.gvimrc"
 
 

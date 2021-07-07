@@ -265,6 +265,7 @@ augroup END
 set background=dark
 let g:rehash256 = 1 " Something to do with Molokai?
 colorscheme molokai
+let g:airline_theme = 'badwolf'
 let g:seoul256_background = 233
 if !has('gui_running')
   let g:solarized_termcolors = 256

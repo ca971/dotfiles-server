@@ -1,0 +1,5 @@
+.vim/autoload/
+.vim/.cache/
+.vim/plugged/
+
+.zsh-completions/
