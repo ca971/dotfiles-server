@@ -1,5 +1,3 @@
-[ -d "$XDG_CONFIG_HOME" ] || mkdir $XDG_CONFIG_HOME
-
 # https://www.osradar.com/install-homebrew-ubuntu-20-04-debian-10/
 test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
 test -d /home/linuxbrew/.linuxbrew && eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)

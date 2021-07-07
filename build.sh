@@ -72,10 +72,12 @@ for item in .* ; do
   esac
 done
 
-[ -d "$XDG_CONFIG_HOME" ] || mkdir $XDG_CONFIG_HOME
+if [ ! -d "$HOME/.config" ]; then
+  mkdir -p "$HOME.config"
+fi
 
 symlink "$basedir/.vim/.vimrc" "$HOME/.vimrc"
-symlink "$basedir/.vim" "$XDG_CONFIG_HOME/nvim"
+symlink "$basedir/.vim" "$HOME/.config/nvim"
 #symlink "$basedir/.vim/gvimrc" "$HOME/.gvimrc"
 
 
