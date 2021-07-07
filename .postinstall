@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 
-vim +PlugUpdate +qall
+#vim +PlugUpdate +qall
+
+echo "All done !!!"
