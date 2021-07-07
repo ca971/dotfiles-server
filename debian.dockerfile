@@ -21,6 +21,7 @@ RUN apt-get -qq update \
     bind9-host \
     build-essential \
     curl \
+    file \
     git-core \
     ca-certificates \
     lsof \
@@ -65,8 +66,19 @@ ENV ZSH_CUSTOM=/home/$USER_NAME/.oh-my-zsh/custom
 RUN git clone https://github.com/spaceship-prompt/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt" --depth=1
 RUN ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme"
 
+RUN git clone https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions
+RUN git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
+RUN git clone https://github.com/paulirish/git-open.git $ZSH_CUSTOM/plugins/git-open
+
+RUN curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh
+
+
 ADD . /dotfiles
 
 RUN /dotfiles/build.sh
 
+RUN brew install git-credential-manager
+
 CMD zsh -l
+
+# vim: set ft=Dockerfile:

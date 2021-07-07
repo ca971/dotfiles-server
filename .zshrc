@@ -11,6 +11,9 @@ CASE_SENSITIVE="true"   # Case-sensitive completion
 DISABLE_CORRECTION="true" # Disable auto-correct built into Zsh
 ZSH="${ZSH:-"$HOME/.oh-my-zsh"}"
 
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ff00ff,bg=cyan,bold,underline"
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+
 # Automatically remove duplicates from these arrays
 if [ -n "$ZSH_VERSION" ]; then
   typeset -U path PATH cdpath CDPATH fpath FPATH manpath MANPATH

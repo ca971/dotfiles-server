@@ -71,7 +71,11 @@ for item in .* ; do
       ;;
   esac
 done
+
+[ -d "$XDG_CONFIG_HOME" ] || mkdir $XDG_CONFIG_HOME
+
 symlink "$basedir/.vim/.vimrc" "$HOME/.vimrc"
+symlink "$basedir/.vim" "$XDG_CONFIG_HOME/nvim"
 #symlink "$basedir/.vim/gvimrc" "$HOME/.gvimrc"
 
 
