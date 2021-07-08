@@ -11,7 +11,7 @@ CASE_SENSITIVE="true"   # Case-sensitive completion
 DISABLE_CORRECTION="true" # Disable auto-correct built into Zsh
 ZSH="${ZSH:-"$HOME/.oh-my-zsh"}"
 
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ff00ff,bg=cyan,bold,underline"
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=transparent,bg=hsla(217,71%,44%,1),bold,underline"
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 
 # Automatically remove duplicates from these arrays
@@ -38,10 +38,6 @@ source $ZSH/oh-my-zsh.sh
 # Colors
 # ============================================================================
 autoload -U colors && colors
-
-# Fix for making docker plugin work
-# ============================================================================
-autoload -U compinit && compinit
 
 # Help
 # ============================================================================
@@ -123,9 +119,13 @@ zstyle ':completion:*' rehash true
 # Keep directories and files separated
 zstyle ':completion:*' list-dirs-first true
 
-# Dircolors
+
+# Homebrew on Linux
 # ----------------------------------------------------------------------------
-test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
+test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.bash_profile
+echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
+
 
 # Fasd
 # ----------------------------------------------------------------------------
@@ -139,6 +139,39 @@ unset fasd_cache
 # Fzf
 # ----------------------------------------------------------------------------
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Rbenv, pyenv, nodenv, direnv
+# ----------------------------------------------------------------------------
+# https://varrette.gforge.uni.lu/blog/2019/09/10/using-pyenv-virtualenv-direnv/
+
+# https://github.com/rbenv/rbenv
+command -v rbenv > /dev/null && eval "$(rbenv init -)"
+
+# pyenv: https://github.com/pyenv/pyenv
+command -v pyenv > /dev/null && eval "$(pyenv init -)"
+
+# pyenv-virtualenv: https://github.com/pyenv/pyenv-virtualenv
+command -v pyenv-virtualenv-init > /dev/null && eval "$(pyenv virtualenv-init -)"
+
+# https://github.com/nodenv/nodenv
+command -v nodenv > /dev/null && eval "$(nodenv init -)"
+
+# direnv: https://direnv.net/
+command -v direnv > /dev/null && eval "$(direnv hook $(basename $SHELL))"
+command -v perl > /dev/null && eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
+
+# jump : https://github.com/gsamokovarov/jump
+command -v jump > /dev/null && eval "$(jump shell --bind=j)"
+
+# https://github.com/clvv/fasd
+command -v fasd > /dev/null && eval "$(fasd --init auto)"
+
+# Rbenv, pyenv, nodenv, direnv
+# ----------------------------------------------------------------------------
+
+# NVM
+# ----------------------------------------------------------------------------
+[ -d $NVM_DIR ] && . $NVM_DIR/nvm.sh
 
 # Local
 # ----------------------------------------------------------------------------

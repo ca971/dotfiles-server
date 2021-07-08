@@ -1,0 +1,7 @@
+neovim
+pynvim
+jupyter
+python-language-server
+flake8
+ipython
+Cython

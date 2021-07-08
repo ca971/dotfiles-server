@@ -45,9 +45,9 @@ fi
 
 cd "$basedir"
 
-echo "Updating common Zsh completions..."
-rm -rf .zsh-completions ~/.zcompdump
-git clone --quiet --depth=1 https://github.com/zsh-users/zsh-completions .zsh-completions
+#echo "Updating common Zsh completions..."
+#rm -rf .zsh-completions ~/.zcompdump
+#git clone --quiet --depth=1 https://github.com/zsh-users/zsh-completions .zsh-completions
 
 files=(
   $HOME/.bashrc
@@ -72,10 +72,6 @@ for item in .* ; do
   esac
 done
 
-if [ ! -d "$HOME/.config" ]; then
-  mkdir -p "$HOME.config"
-fi
-
 symlink "$basedir/.vim/.vimrc" "$HOME/.vimrc"
 symlink "$basedir/.vim" "$HOME/.config/nvim"
 #symlink "$basedir/.vim/gvimrc" "$HOME/.gvimrc"
@@ -87,22 +83,23 @@ for item in bin/* ; do
   symlink "$basedir/$item" "$bindir/$(basename $item)"
 done
 
-#if which tmux >/dev/null 2>&1 ; then
-#  echo "Setting up tmux..."
-#  tpm="$HOME/.tmux/plugins/tpm"
-#  if [ -e "$tpm" ]; then
-#    pushd "$tpm" >/dev/null
-#    git pull -q origin master
-#    popd >/dev/null
-#  else
-#    git clone -q https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
-#  fi
-#  $tpm/scripts/install_plugins.sh >/dev/null
-#  $tpm/scripts/clean_plugins.sh >/dev/null
-#  $tpm/scripts/update_plugin.sh >/dev/null
-#else
-#  echo "Skipping tmux setup because tmux isn't installed."
-#fi
+
+if which tmux >/dev/null 2>&1 ; then
+  echo "Setting up tmux..."
+  tpm="$HOME/.tmux/plugins/tpm"
+  if [ -e "$tpm" ]; then
+    pushd "$tpm" >/dev/null
+    git pull -q origin master
+    popd >/dev/null
+  else
+    git clone -q https://github.com/tmux-plugins/tpm "$HOME/.tmux/plugins/tpm"
+  fi
+  $tpm/scripts/install_plugins.sh >/dev/null
+  $tpm/scripts/clean_plugins.sh >/dev/null
+  $tpm/scripts/update_plugin.sh >/dev/null
+else
+  echo "Skipping tmux setup because tmux isn't installed."
+fi
 
 postinstall="$HOME/.postinstall"
 if [ -e "$postinstall" ]; then

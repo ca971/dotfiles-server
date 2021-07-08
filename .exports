@@ -91,20 +91,22 @@ if command -v go &>/dev/null; then
   export PATH=$PATH:$GOROOT/bin
 fi
 
-# Language
-# =============================================================================
-export LC_ALL=fr_FR
-export LANG=french
 
 # Mysql
 # =============================================================================
-command -v mysql &>/dev/null && \
-  export MYSQL_HISTFILE="$XDG_DATA_HOME/share/mysql/.mysql_history"
+if command -v mysql &>/dev/null; then
+  if [ -d "$XDG_DATA_HOME/share/mysql"]; then
+    export MYSQL_HISTFILE="$XDG_DATA_HOME/share/mysql/.mysql_history"
+  fi
+fi
 
 # Node
 # =============================================================================
-command -v node &>/dev/null && \
-  export NODE_HISTFILE="$XDG_DATA_HOME/share/node/.node_history"
+if command -v node &>/dev/null; then
+  if [ -d "$XDG_DATA_HOME/share/node"]; then
+    export NODE_HISTFILE="$XDG_DATA_HOME/share/node/.node_history"
+  fi
+fi
 
 # NVM
 # =============================================================================
@@ -138,9 +140,11 @@ export LESS_TERMCAP_us=$'\e[01;32m'      # begin underline
 
 # Python
 # =============================================================================
-export PYTHONVERSION=$(python -V | cut -d' ' -f2 | cut -d '.' -f1-2)
-export PYTHONIOENCODING="UTF-8"
-export PYTHONPATH="$HOME/.pyenv/versions/python_3/lib/python$PYTHONVERSION/site-packages"
+if command -v python > /dev/null; then
+  export PYTHONVERSION=$(python -V | cut -d' ' -f2 | cut -d '.' -f1-2)
+  export PYTHONIOENCODING="UTF-8"
+  export PYTHONPATH="$HOME/.pyenv/versions/python_3/lib/python$PYTHONVERSION/site-packages"
+fi
 
 # pyenv-virtualenv: prompt changing will be removed from future release
 command -v pyenv-virtualenv-init &> /dev/null && export PYENV_VIRTUALENV_DISABLE_PROMPT=1
@@ -174,7 +178,9 @@ command -v vagrant &>/dev/null && \
 if [ -n "$ZSH_VERSION" ]; then
   # History
   # ---------------------------------------------------------------------------
-  export HISTFILE="$XDG_DATA_HOME/share/zsh/.zsh_history"
+  if [ -d "$XDG_DATA_HOME/share/zsh"]; then
+    export zsh_HISTFILE="$XDG_DATA_HOME/share/zsh/.zsh_history"
+  fi
   export HIST_STAMPS="dd-mm-yyyy"
 
   # Oh-my-zsh

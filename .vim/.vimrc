@@ -207,7 +207,7 @@ command! BufCloseOthers %bd|e#
 command! W w !sudo tee % > /dev/null
 "}}}
 " Update & Upgrade{{{
-command PU PlugUpdate | PlugUpgrade
+command! PU PlugUpdate | PlugUpgrade
 "}}}
 " PLUGINS:
 " Vim-Plug install"{{{
@@ -264,7 +264,13 @@ augroup END
 " Make sure colored syntax mode is on, and make it Just Work with 256-color terminals.
 set background=dark
 let g:rehash256 = 1 " Something to do with Molokai?
-colorscheme molokai
+
+if isdirectory(expand('~/.vim/plugged/molokai/'))
+  colorscheme molokai
+else
+  colorscheme default
+endif
+
 let g:airline_theme = 'badwolf'
 let g:seoul256_background = 233
 if !has('gui_running')
