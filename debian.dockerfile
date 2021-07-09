@@ -1,169 +1,166 @@
-FROM debian:latest
+FROM debian:${version:-latest}
+
 MAINTAINER ca971
 
-LABEL Description="Debian For Dev"
+LABEL Description="ca971 Debian For Dev"
 
-ARG DEBIAN_FRONTEND=noninteractive
+# Set shell command by SHELL [ “/bin/bash”, “-l”, “-c” ] and simply call RUN ....
+SHELL [ "/bin/bash", "-l", "-c" ]
 
-# DOTFILES Directory
-ENV DOTFILES_DIR=dotfiles
+# tmp as working directory
+WORKDIR /tmp
 
-# Non privilegged User
-ARG USER_NAME="ca971"
-ARG USER_PASSWORD="p@$$w0d"
+#ENV XDG_CONFIG_HOME="$HOME/.config"
 
-ENV USER_NAME $USER_NAME
-ENV USER_PASSWORD $USER_PASSWORD
+ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 
-# Container image version
-ENV CONTAINER_IMAGE_VER=v1.0.0
+# "vscode" user for "Vscode Remote Docker Container"
+ARG USER_NAME=vscode
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
 
-# Locales environment
-ENV LANG=fr_FR.UTF-8
-
-# Default terminal
-ENV TERM xterm
-
-# Pyenv and Python
-ENV PYENV_ROOT $HOME/.pyenv
-ENV PYTHONDONTWRITEBYTECODE true
-ENV PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV true
-ENV PYTHON_VERSION 3.9.6
-ENV PYTHON_VERSION_FILE="Python-$PYTHON_VERSION.tgz"
-
-# Nvm environment variables
-ENV NVM_DIR $HOME/.nvm
-ENV NODE_VERSION node
-ENV NODE_LTS_VERSION 14.17.3
-
-# Zsh and Oh-My-Zsh
-ENV ZSH_THEME spaceship
-ENV ZSH_CUSTOM=$HOME/.oh-my-zsh/custom
-
-# Display environment variables
-RUN echo $USER_NAME
-RUN echo $USER_PASSWORD
-RUN echo $CONTAINER_IMAGE_VER
-
-# replace shell with bash so we can source files
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-
-RUN apt-get -qq update && apt-get -qq upgrade \
+# Package bundle
+RUN groupadd --gid $USER_GID $USER_NAME \
+  && useradd -s $(which zsh) --uid $USER_UID --gid $USER_GID -m $USER_NAME \
+  && apt-get -qq update && apt-get -qq upgrade \
   && apt-get -qq install -y --no-install-recommends \
-    bind9-host \
-    build-essential \
-    ca-certificates \
-    exa \
-    gnupg \
-    curl \
-    fasd \
-    file \
-    git-core \
-    libbz2-dev \
-    libffi-dev \
-    libgdbm-dev \
-    libncurses5-dev \
-    libnss3-dev \
-    libreadline-dev \
-    libsqlite3-dev \
-    libssl-dev \
-    locales \
-    lsof \
-    make \
-    netcat \
-    nmap \
-    net-tools \
-    python3-pip \
-    ruby \
-    ruby-dev \
-    scala \
-    socat \
-    software-properties-common \
-    strace \
-    sudo \
-    sysstat \
-    tcpdump \
-    unzip \
-    zip \
-    zsh-syntax-highlighting \
-    tmux \
-    wget \
-    zlib1g-dev \
-    zsh \
-  && locale-gen --purge fr_FR.UTF-8 \
-  && echo -e 'LANG="fr_FR.UTF-8"\nLANGUAGE="fr"\n' > /etc/default/locale \
-  && echo "Europe/Paris" > /etc/timezone \
-  && adduser --quiet --disabled-password --shell $(which zsh) --home /home/$USER_NAME --gecos "User" $USER_NAME \
-  && echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd && usermod -aG sudo $USER_NAME \
-  && mkdir -p $HOME/.config
-
-#USER $USER_NAME
-
-# Install Python from source
-#RUN wget https://www.python.org/ftp/python/3.9.6/Python-3.9.6.tgz \
-RUN wget https://www.python.org/ftp/python/$PYTHON_VERSION/$PYTHON_VERSION_FILE \
-  && tar xf $PYTHON_VERSION_FILE \
-  && cd Python-3.9.6/ \
-  && ./configure --enable-optimizations \
-  && make -j 2 \
-  && sudo make altinstall \
-  && rm $PYTHON_VERSION_FILE \
-  && rm -rf ${PYTHON_VERSION_FILE%%.tgz}
-
-RUN apt-get -qq install -y --no-install-recommends \
-    vim \
-    neovim \
-    python3-venv \
-    python3-neovim \
+  bind9-host \
+  build-essential \
+  ca-certificates \
+  exa \
+  gnupg \
+  curl \
+  fasd \
+  file \
+  git-core \
+  libbz2-dev \
+  libffi-dev \
+  libgdbm-dev \
+  libncurses5-dev \
+  libnss3-dev \
+  libreadline-dev \
+  libsqlite3-dev \
+  libssl-dev \
+  locales \
+  lsof \
+  make \
+  netcat \
+  nmap \
+  net-tools \
+  python3-pip \
+  ruby \
+  ruby-dev \
+  scala \
+  socat \
+  software-properties-common \
+  strace \
+  sudo \
+  sysstat \
+  tcpdump \
+  unzip \
+  zip \
+  zsh-syntax-highlighting \
+  tmux \
+  wget \
+  zlib1g-dev \
+  zsh \
+  vim \
+  neovim \
+  python3-venv \
+  && echo $USER_NAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USER_NAME \
+  && chmod 0440 /etc/sudoers.d/$USER_NAME \
   && apt-get -y -qq autoremove \
   && apt-get -qq clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Pyenv
-RUN git clone https://github.com/pyenv/pyenv.git "$PYENV_ROOT"
+# Configure locales
+RUN locale-gen --purge fr_FR.UTF-8 \
+  && echo -e 'LANG="fr_FR.UTF-8"\nLANGUAGE="fr_FR:fr"\n' > /etc/default/locale \
+  && echo "Europe/Paris" > /etc/timezone
 
-# Rbenv
-RUN git clone https://github.com/rbenv/rbenv.git "$RBENV_ROOT"
+# Add a non-privileged user
+#RUN adduser --quiet --disabled-password --shell $(which zsh) --home /home/$USER_NAME --gecos "User" $USER_NAME && \
+#  echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd && usermod -aG sudo $USER_NAME
 
-# Nvm : https://github.com/creationix/nvm#install-script
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+USER $USER_NAME
 
-RUN bash -c " \
-  source $HOME/.profile && \
-  nvm install $NODE_VERSION && \
-  nvm alias default $NODE_VERSION && \
-  nvm use default && \
-  nvm install $NODE_LTS_VERSION && \
-  nvm use $NODE_LTS_VERSION \
-  "
+#RUN mkdir -p $XDG_CONFIG_HOME
 
-# Oh-My-Zsh
-RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
+# Install pyenv, pyenv-virtualenv and default python version
+ENV PYENV_ROOT $HOME/.pyenv
+ENV PYTHONDONTWRITEBYTECODE true
+ENV PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV true
+ENV PATH=$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
 
-# Oh-My-Zsh plugins
-RUN git clone https://github.com/spaceship-prompt/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt" --depth=1 \
-  && ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme" \
-  && git clone https://github.com/zsh-users/zsh-autosuggestions $ZSH_CUSTOM/plugins/zsh-autosuggestions \
-  && git clone git://github.com/zsh-users/zsh-completions.git $ZSH_CUSTOM/plugins/zsh-completions \
-  && git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting \
-  && git clone https://github.com/paulirish/git-open.git $ZSH_CUSTOM/plugins/git-open
+COPY .python-version /tmp/.python-version
+COPY requirements.txt /tmp/requirements.txt
 
-# Brew
-RUN bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-#RUN bash -c " \
-#  brew tap buo/cask-upgrade && \
-#  brew tap jakewmeyer/geo && \
-#  brew tap neovim/neovim && \
-#  brew tap universal-ctags/universal-ctags \
-#  "
-# Git credential
-#RUN brew install git-credential-manager
+RUN curl https://pyenv.run | bash \
+  && cd $PYENV_ROOT \
+  && git checkout `git describe --abbrev=0 --tags` \
+  && echo 'eval "$(pyenv init -)"' >> $HOME/.bashrc
+RUN git clone https://github.com/pyenv/pyenv-virtualenv.git $PYENV_ROOT/plugins/pyenv-virtualenv \
+  && echo 'eval "$(pyenv virtualenv-init -)"' >> $HOME/.bashrc
+RUN pyenv install $(cat .python-version) \
+  && pyenv global $(cat .python-version) \
+  && pip install --upgrade pip \
+  && pip install -r requirements.txt \
+  && python -V && pip -V
 
-ADD . /$DOTFILES_DIR
+# Install nvm and default Node version
+ENV NVM_DIR $HOME/.nvm
+#COPY .nvmrc /tmp/.node-version
+#ENV NODE_VERSION=$(cat .node-version)
+#ENV NODE_PATH=$NVM_DIR/$NODE_VERSION/lib/node_modules
+#ENV PATH=$NVM_DIR/versions/node/$NODE_VERSION/bin:$PATH
 
-# Install dotfiles
-RUN /$DOTFILES_DIR/build.sh
+RUN curl --silent -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash \
+  && echo 'source $NVM_DIR/nvm.sh' >> $HOME/.bashrc \
+  && nvm install && nvm use \
+  && node -v && npm -v
 
-CMD ["zsh", "-l"]
+ENV PATH=/usr/local/rvm/bin:$PATH
 
-# vim: set ft=Dockerfile:
+## Install default Ruby version
+COPY .ruby-version /tmp/.ruby-version
+
+RUN curl -L https://get.rvm.io | bash -s stable \
+  && rvm requirements \
+  && rvm install $(cat .ruby-version) \
+  && vm use --default $(cat .ruby-version) \
+  && gem install bundler \
+  && rvm cleanup all
+
+# Install Homebrew for linux
+ENV PATH=$HOME/.linuxbrew/bin:$PATH
+
+RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
+  && mkdir ~/.linuxbrew/bin \
+  && ln -s ../Homebrew/bin/brew ~/.linuxbrew/bin \
+  && eval $(~/.linuxbrew/bin/brew shellenv) \
+  && brew --version \
+  && brew tap homebrew/core \
+  && brew tap buo/cask-upgrade \
+  && brew tap jakewmeyer/geo \
+  && brew tap neovim/neovim \
+  && brew tap universal-ctags/universal-ctags
+
+
+# Install Oh-my-zsh with zsh-in-docker
+# https://github.com/deluan/zsh-in-docker/blob/master/Dockerfile
+RUN wget -O- "https://github.com/deluan/zsh-in-docker/releases/download/v1.1.1/zsh-in-docker.sh" -- \
+  -t https://github.com/denysdovhan/spaceship-prompt \
+  -a 'SPACESHIP_PROMPT_ADD_NEWLINE="false"' \
+  -a 'SPACESHIP_PROMPT_SEPARATE_LINE="false"' \
+  -p git \
+  -p https://github.com/zsh-users/zsh-autosuggestions \
+  -p https://github.com/zsh-users/zsh-completions \
+  -p https://github.com/zsh-users/zsh-history-substring-search \
+  -p https://github.com/zsh-users/zsh-syntax-highlighting \
+  -p 'history-substring-search' \
+  -a 'bindkey "\$terminfo[kcuu1]" history-substring-search-up' \
+  -a 'bindkey "\$terminfo[kcud1]" history-substring-search-down'
+
+ENTRYPOINT [ "/bin/zsh" ]
+
+CMD ["-l"]
