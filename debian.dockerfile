@@ -1,3 +1,4 @@
+ARG version latest
 FROM debian:${version:-latest}
 
 MAINTAINER ca971
@@ -10,25 +11,45 @@ SHELL [ "/bin/bash", "-l", "-c" ]
 # tmp as working directory
 WORKDIR /tmp
 
-#ENV XDG_CONFIG_HOME="$HOME/.config"
+ENV XDG_CONFIG_HOME="$HOME/.config"
 
-ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
+#ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
+#ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$NVM_DIR/bin:/usr/local/rvm/bin:$HOME/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
+#ENV PATH=$HOME/.linuxbrew/bin:$PATH
 
-# "vscode" user for "Vscode Remote Docker Container"
-ARG USER_NAME=vscode
-ARG USER_UID=1000
-ARG USER_GID=$USER_UID
+# "ca971" user for "Vscode Remote Docker Container"
+#ARG USER_NAME=ca971
+#ARG USER_UID=1000
+#ARG USER_GID=$USER_UID
+
+#  && echo $USER_NAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USER_NAME \
+#  && chmod 0440 /etc/sudoers.d/$USER_NAME \
+
+# Non privilegged User
+ARG USER_NAME="ca971"
+ARG USER_PASSWORD="p@$$w0d"
+
+ENV USER_NAME $USER_NAME
+ENV USER_PASSWORD $USER_PASSWORD
+
+# Add a non-privileged user
+#RUN adduser --quiet --disabled-password --shell $(which zsh) --home /home/$USER_NAME --gecos "User" $USER_NAME && \
+#  echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd && usermod -aG sudo $USER_NAME
 
 # Package bundle
-RUN groupadd --gid $USER_GID $USER_NAME \
-  && useradd -s $(which zsh) --uid $USER_UID --gid $USER_GID -m $USER_NAME \
-  && apt-get -qq update && apt-get -qq upgrade \
+#RUN groupadd --gid $USER_GID $USER_NAME \
+#  && useradd -s $(which bash) --uid $USER_UID --gid $USER_GID -m $USER_NAME \
+RUN apt-get -qq update && apt-get -qq upgrade \
   && apt-get -qq install -y --no-install-recommends \
+  autoconf \
+  automake \
   bind9-host \
   build-essential \
   ca-certificates \
+  dirmngr \
   exa \
   gnupg \
+  gnupg2 \
   curl \
   fasd \
   file \
@@ -67,11 +88,13 @@ RUN groupadd --gid $USER_GID $USER_NAME \
   vim \
   neovim \
   python3-venv \
+  && adduser --quiet --disabled-password --shell $(which zsh) --home /home/$USER_NAME --gecos "User" $USER_NAME \
+  && echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd && usermod -aG sudo $USER_NAME \
   && echo $USER_NAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USER_NAME \
   && chmod 0440 /etc/sudoers.d/$USER_NAME \
   && apt-get -y -qq autoremove \
   && apt-get -qq clean \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+  && rm -rf /var/lib/apt/lists/* /dotfiles/* /var/dotfiles/*
 
 # Configure locales
 RUN locale-gen --purge fr_FR.UTF-8 \
@@ -82,57 +105,99 @@ RUN locale-gen --purge fr_FR.UTF-8 \
 #RUN adduser --quiet --disabled-password --shell $(which zsh) --home /home/$USER_NAME --gecos "User" $USER_NAME && \
 #  echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd && usermod -aG sudo $USER_NAME
 
-USER $USER_NAME
+#USER $USER_NAME
 
 #RUN mkdir -p $XDG_CONFIG_HOME
 
 # Install pyenv, pyenv-virtualenv and default python version
-ENV PYENV_ROOT $HOME/.pyenv
-ENV PYTHONDONTWRITEBYTECODE true
-ENV PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV true
-ENV PATH=$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
+#ENV PYENV_ROOT /root/.pyenv
+#ENV PYTHONDONTWRITEBYTECODE true
+#ENV PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV true
+#ENV PYTHON_VERSION 3.9.6
 
-COPY .python-version /tmp/.python-version
-COPY requirements.txt /tmp/requirements.txt
+#COPY .python-version /dotfiles/.python-version
+#COPY requirements.txt /dotfiles/requirements.txt
 
-RUN curl https://pyenv.run | bash \
-  && cd $PYENV_ROOT \
-  && git checkout `git describe --abbrev=0 --tags` \
-  && echo 'eval "$(pyenv init -)"' >> $HOME/.bashrc
-RUN git clone https://github.com/pyenv/pyenv-virtualenv.git $PYENV_ROOT/plugins/pyenv-virtualenv \
-  && echo 'eval "$(pyenv virtualenv-init -)"' >> $HOME/.bashrc
-RUN pyenv install $(cat .python-version) \
-  && pyenv global $(cat .python-version) \
-  && pip install --upgrade pip \
-  && pip install -r requirements.txt \
-  && python -V && pip -V
+
+#&& git checkout `git describe --abbrev=0 --tags` \
+#ENV PYTHON_VERSION=$(cat .python-version)
+
+RUN curl https://pyenv.run | bash
+#  && echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.profile \
+#  && echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.profile \
+#  && echo 'eval "$(pyenv init --path)"' >> ~/profile \
+#  && echo 'eval "$(pyenv init -)"' >> $HOME/.bashrc \
+#  && echo 'eval "$(pyenv virtualenv-init -)"' >> $HOME/.bashrc \
+#  && pyenv install $PYTHON_VERSION \
+#  && pyenv global $PYTHON_VERSION \
+#  && pip install --upgrade pip \
+#  && pip install -r requirements.txt \
+#  && python -V && pip -V
+
+#ENV PATH=$PYENV_ROOT/shims:$PYENV_ROOT/bin:$PATH
 
 # Install nvm and default Node version
-ENV NVM_DIR $HOME/.nvm
-#COPY .nvmrc /tmp/.node-version
+#ENV NVM_DIR $HOME/.nvm
+#COPY .nvmrc /dotfiles/.nvmrc
 #ENV NODE_VERSION=$(cat .node-version)
 #ENV NODE_PATH=$NVM_DIR/$NODE_VERSION/lib/node_modules
 #ENV PATH=$NVM_DIR/versions/node/$NODE_VERSION/bin:$PATH
 
-RUN curl --silent -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash \
-  && echo 'source $NVM_DIR/nvm.sh' >> $HOME/.bashrc \
-  && nvm install && nvm use \
-  && node -v && npm -v
+#RUN curl --silent -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash \
+#  && echo 'source $NVM_DIR/nvm.sh' >> $HOME/.bashrc \
+#  && nvm install && nvm use \
+#  && node -v && npm -v
 
-ENV PATH=/usr/local/rvm/bin:$PATH
+ENV NVM_DIR ~/.nvm
+#ENV NODE_VERSION 16.4.2
+ENV NODE_VERSION node
+ENV NODE_LTS_VERSION 14.17.3
+
+RUN curl --silent -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash \
+  && nvm install $NODE_VERSION \
+  && nvm alias default $NODE_VERSION \
+  && nvm use default \
+  && nvm install $NODE_LTS_VERSION \
+  && nvm use $NODE_LTS_VERSION
+
+# this now works
+#RUN nvm install && nvm use
+#ENV PATH=/usr/local/rvm/bin:$PATH
+#source $NVM_DIR/nvm.sh && \
+#  nvm install $NODE_VERSION && \
+#  nvm alias default $NODE_VERSION && \
+#  nvm use default && \
+#  nvm install $NODE_LTS_VERSION && \
+#  nvm use $NODE_LTS_VERSION \
 
 ## Install default Ruby version
-COPY .ruby-version /tmp/.ruby-version
+#COPY .ruby-version /dotfiles/.ruby-version
+#ENV RUBY_VERSION 3.0.8
 
-RUN curl -L https://get.rvm.io | bash -s stable \
-  && rvm requirements \
-  && rvm install $(cat .ruby-version) \
-  && vm use --default $(cat .ruby-version) \
-  && gem install bundler \
-  && rvm cleanup all
+#RUN gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3 \
+#  && curl -L https://get.rvm.io | bash -s stable \
+#  && rvm requirements \
+#  && rvm install $RUBY_VERSION \
+#  && vm use --default $RUBY_VERSION \
+#  && gem install bundler --no-ri --no-rdoc \
+#  && rvm cleanup all
+
+
+# Install RVM
+#RUN gpg --keyserver hkp://keys.gnupg.net --recv-keys \
+#      409B6B1796C275462A1703113804BB82D39DC0E3 \
+#      7D2BAF1CF37B13E2069D6956105BD0E739499BDB \
+# && curl -sSL https://get.rvm.io | bash -s -- --autolibs=read-fail stable \
+# && echo 'bundler' >> /root/.rvm/gemsets/global.gems \
+# && echo 'rvm_silence_path_mismatch_check_flag=1' >> ~/.rvmrc
+#
+## Install Rubies
+#RUN rvm install 3.0.8 \
+# && rvm alias create 3.0 ruby-3.0.8 \
+# && rvm use --default 3.0.8
 
 # Install Homebrew for linux
-ENV PATH=$HOME/.linuxbrew/bin:$PATH
+#ENV PATH=$HOME/.linuxbrew/bin:$PATH
 
 RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
   && mkdir ~/.linuxbrew/bin \
@@ -146,9 +211,11 @@ RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
   && brew tap universal-ctags/universal-ctags
 
 
+
+
 # Install Oh-my-zsh with zsh-in-docker
 # https://github.com/deluan/zsh-in-docker/blob/master/Dockerfile
-RUN wget -O- "https://github.com/deluan/zsh-in-docker/releases/download/v1.1.1/zsh-in-docker.sh" -- \
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.1/zsh-in-docker.sh)" -- \
   -t https://github.com/denysdovhan/spaceship-prompt \
   -a 'SPACESHIP_PROMPT_ADD_NEWLINE="false"' \
   -a 'SPACESHIP_PROMPT_SEPARATE_LINE="false"' \

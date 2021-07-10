@@ -2,38 +2,11 @@ if [[ -n "$BASH_VERSION" ]]; then
   return 1 2> /dev/null || exit 1;
 fi;
 
-# Variables
-# ============================================================================
-#ZSH_THEME="oxide";
-ZSH_THEME="spaceship";
-SPACESHIP_BATTERY_SHOW=false
-CASE_SENSITIVE="true"   # Case-sensitive completion
-DISABLE_CORRECTION="true" # Disable auto-correct built into Zsh
-ZSH="${ZSH:-"$HOME/.oh-my-zsh"}"
-
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=transparent,bg=hsla(217,71%,44%,1),bold,underline"
-ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-
 # Automatically remove duplicates from these arrays
 if [ -n "$ZSH_VERSION" ]; then
   typeset -U path PATH cdpath CDPATH fpath FPATH manpath MANPATH
 fi
 
-# Oh-my-zsh
-# ============================================================================
-plugins=(
-  osx
-  sudo                        # hitting ESC twice puts sudo in front of the current command, or the last one if the command line is emy
-  vi-mode
-  vscode                      # makes interaction between the command line and the code editor easier
-  zsh-completions
-  zsh-autosuggestions
-  zsh-syntax-highlighting
-  git-open
-  #zsh-history-substring-search
-)
-
-source $ZSH/oh-my-zsh.sh
 
 # Colors
 # ============================================================================
@@ -46,7 +19,7 @@ autoload run-help
 
 # Source files
 # ============================================================================
-for file in $HOME/.{exports,functions,localrc,git_prompt,aliases}; do
+for file in $HOME/.{exports,functions,localrc,aliases}; do
   [ -r "$file" ] && [ -f "$file" ] && . "$file";
 done;
 unset file;
@@ -120,13 +93,6 @@ zstyle ':completion:*' rehash true
 zstyle ':completion:*' list-dirs-first true
 
 
-# Homebrew on Linux
-# ----------------------------------------------------------------------------
-test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
-test -r ~/.bash_profile && echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.bash_profile
-echo "eval \$($(brew --prefix)/bin/brew shellenv)" >>~/.profile
-
-
 # Fasd
 # ----------------------------------------------------------------------------
 fasd_cache="$HOME/.cache/.fasd-init-zsh"
@@ -135,43 +101,6 @@ if [ "$(command -v fasd)" -nt "$fasd_cache" -o ! -s "$fasd_cache" ]; then
 fi
 source "$fasd_cache"
 unset fasd_cache
-
-# Fzf
-# ----------------------------------------------------------------------------
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# Rbenv, pyenv, nodenv, direnv
-# ----------------------------------------------------------------------------
-# https://varrette.gforge.uni.lu/blog/2019/09/10/using-pyenv-virtualenv-direnv/
-
-# https://github.com/rbenv/rbenv
-command -v rbenv > /dev/null && eval "$(rbenv init -)"
-
-# pyenv: https://github.com/pyenv/pyenv
-command -v pyenv > /dev/null && eval "$(pyenv init -)"
-
-# pyenv-virtualenv: https://github.com/pyenv/pyenv-virtualenv
-command -v pyenv-virtualenv-init > /dev/null && eval "$(pyenv virtualenv-init -)"
-
-# https://github.com/nodenv/nodenv
-command -v nodenv > /dev/null && eval "$(nodenv init -)"
-
-# direnv: https://direnv.net/
-command -v direnv > /dev/null && eval "$(direnv hook $(basename $SHELL))"
-command -v perl > /dev/null && eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
-
-# jump : https://github.com/gsamokovarov/jump
-command -v jump > /dev/null && eval "$(jump shell --bind=j)"
-
-# https://github.com/clvv/fasd
-command -v fasd > /dev/null && eval "$(fasd --init auto)"
-
-# Rbenv, pyenv, nodenv, direnv
-# ----------------------------------------------------------------------------
-
-# NVM
-# ----------------------------------------------------------------------------
-[ -d $NVM_DIR ] && . $NVM_DIR/nvm.sh
 
 # Local
 # ----------------------------------------------------------------------------

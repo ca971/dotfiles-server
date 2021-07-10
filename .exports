@@ -22,6 +22,7 @@ paths=(
   $XDG_DATA_HOME/personal/bin
   $XDG_DATA_HOME/share/bin
   $XDG_DATA_HOME/bin
+  $HOME/.linuxbrew/bin
   $HOME/.pyenv/shims
   $HOME/.pyenv/bin
   $HOME/.rbenv/shims
@@ -157,12 +158,10 @@ fi
 # =============================================================================
 export SSH_KEY_PATH="~/.ssh/id_rsa"
 
-
 # Tmux
 # =============================================================================
 command -v tmux &>/dev/null && \
   export DEFAULT_TMUX_SESSION="default"
-
 
 # Terminal
 # =============================================================================
