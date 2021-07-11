@@ -37,6 +37,7 @@ RUN /tmp/zsh-docker.sh \
     -a 'SPACESHIP_PROMPT_SEPARATE_LINE="false"' \
     -p git \
     -p sudo \
+    -p fzf \
     -p vi-mode \
     -p https://github.com/zsh-users/zsh-autosuggestions \
     -p https://github.com/zsh-users/zsh-completions \
@@ -46,6 +47,19 @@ RUN /tmp/zsh-docker.sh \
     -a 'bindkey "\$terminfo[kcuu1]" history-substring-search-up' \
     -a 'bindkey "\$terminfo[kcud1]" history-substring-search-down'
 
+# Install Python from source
+RUN wget https://www.python.org/ftp/python/3.9.6/Python-3.9.6.tgz \
+  && tar xf Python-3.9.6.tgz \
+  && cd Python-3.9.6/ \
+  && ./configure --enable-optimizations \
+  && make -j 2 \
+  && sudo make altinstall
+
+# Install pyenv, pyenv-virtualenv and default python version
+ENV PYTHONDONTWRITEBYTECODE true
+ENV PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV true
+ENV PYTHON_VERSION 3.9.6
+
 COPY requirements.txt /tmp
 WORKDIR /tmp
 
@@ -54,11 +68,8 @@ RUN curl https://pyenv.run | bash
 RUN eval "$(pyenv init --path)"
 RUN eval "$(pyenv init -)"
 RUN eval "$(pyenv virtualenv-init -)"
-RUN pyenv install $PYTHON_VERSION \
-  && pyenv global $PYTHON_VERSION \
-  && pip install --upgrade pip \
-  && pip install -r requirements.txt \
-  && python -V && pip -V
+#RUN eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)"
+
 
 # Install Rbenv
 RUN git clone https://github.com/rbenv/rbenv.git ~/.rbenv
@@ -86,6 +97,7 @@ RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
   && brew tap buo/cask-upgrade \
   && brew tap jakewmeyer/geo \
   && brew tap neovim/neovim \
-  && brew tap universal-ctags/universal-ctags
+  && brew tap universal-ctags/universal-ctags \
+  && brew update && brew upgrade && brew install font-fira-code-nerd-font
 
 CMD ["/usr/bin/zsh","-l"]

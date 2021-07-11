@@ -107,6 +107,7 @@ install_dependencies() {
         fasd \
         file \
         git-core \
+        htop \
         libbz2-dev \
         libffi-dev \
         libgdbm-dev \
@@ -118,9 +119,13 @@ install_dependencies() {
         locales \
         lsof \
         make \
+        most \
+        man-db \
         netcat \
         nmap \
         net-tools \
+        perl \
+        procps \
         python3-pip \
         ruby \
         ruby-dev \
@@ -156,7 +161,7 @@ zshrc_template() {
   cat <<EOM
 export LANG='fr_FR.UTF-8'
 export LANGUAGE='fr_FR:en'
-export LC_ALL='fr_FR.UTF-8'
+#export LC_ALL='fr_FR.UTF-8'
 export TERM=xterm
 
 ##### Zsh/Oh-my-Zsh Configuration
@@ -266,12 +271,17 @@ else
   git clone --quiet --depth=1 "$REPO_URL" "$BASE_DIR"
 fi
 
-# Make config directory
-mkdir ~/.config
+# Make config, local, cache directories
+test -d "~/.config" || mkdir ~/.config
+test -d "~/.local" || mkdir ~/.local
+test -d "~/.cache" || mkdir ~/.cache
 
 # Switch into $BASE_DIR
 cd "$BASE_DIR"
 
+# "Updating common Zsh completions..."
+rm -rf .zsh-completions ~/.zcompdump
+git clone --quiet --depth=1 https://github.com/zsh-users/zsh-completions .zsh-completions
 
 # Create simlinks to $HOME directory
 echo "Creating symlinks..."
