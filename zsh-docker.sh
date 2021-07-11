@@ -162,6 +162,11 @@ export TERM=xterm
 ##### Zsh/Oh-my-Zsh Configuration
 export ZSH="$_HOME/.oh-my-zsh"
 
+# Automatically remove duplicates from these arrays
+if [ -n "$ZSH_VERSION" ]; then
+  typeset -U path PATH cdpath CDPATH fpath FPATH manpath MANPATH
+fi
+
 ZSH_THEME="${_THEME}"
 plugins=($_PLUGINS)
 
@@ -261,6 +266,9 @@ else
   git clone --quiet --depth=1 "$REPO_URL" "$BASE_DIR"
 fi
 
+# Make config directory
+mkdir ~/.config
+
 # Switch into $BASE_DIR
 cd "$BASE_DIR"
 
@@ -286,7 +294,7 @@ test -e "$BASE_DIR/.vim/.vimrc_before" && symlink "$BASE_DIR/.vim/.vimrc_before"
 test -e "$BASE_DIR/.vim/.vimrc_bundles" && symlink "$BASE_DIR/.vim/.vimrc_bundles" "$HOME/.vimrc_bundles"
 test -e "$BASE_DIR/.vim/.gvimrc" && symlink "$BASE_DIR/.vim/.gvimrc" "$HOME/.gvimrc"
 
-cat "$BASE_DIR/bashrc" >> $HOME/.bashrc
+cat "$BASE_DIR/bashrc" > $HOME/.bashrc
 cat "$BASE_DIR/zshrc" >> $HOME/.zshrc
 
 # Symlink dotfiles/bin to $HOME/bin
