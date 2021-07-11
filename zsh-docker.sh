@@ -7,18 +7,6 @@ THEME=powerlevel10k/powerlevel10k
 PLUGINS=""
 ZSHRC_APPEND=""
 
-# Default Python version
-PYTHON_VERSION=3.9.6
-
-# Default Nvm directory
-NVM_DIR="~/.nvm"
-
-# Default Node version 
-NODE_VERSION=node
-
-# Default Node LTS version
-NODE_LTS_VERSION=14.17.3
-
 # Install github dotfiles
 BASE_DIR="$HOME/.dotfiles"
 BIN_DIR="$HOME/bin"
@@ -55,21 +43,21 @@ echo "  THEME   = $THEME"
 echo "  PLUGINS = $PLUGINS"
 echo
 
-function check_dist() {
+check_dist() {
   (
     . /etc/os-release
     echo $ID
   )
 }
 
-function check_version() {
+check_version() {
   (
     . /etc/os-release
     echo $VERSION_ID
   )
 }
 
-function install_dependencies() {
+install_dependencies() {
   DIST=`check_dist`
   VERSION=`check_version`
   echo "###### Installing dependencies for $DIST"
@@ -140,14 +128,12 @@ function install_dependencies() {
         socat \
         software-properties-common \
         strace \
-        sudo \
         sysstat \
         tcpdump \
         unzip \
         zip \
         zsh-syntax-highlighting \
         tmux \
-        wget \
         zlib1g-dev \
         zsh \
         vim \
@@ -158,13 +144,11 @@ function install_dependencies() {
         $Sudo apt-get -y install locales-all
       fi
       $Sudo locale-gen --purge fr_FR.UTF-8
-      $Sudo echo -e 'LANG="fr_FR.UTF-8"\nLANGUAGE="fr_FR:fr"\n' > /etc/default/locale
-      $Sudo echo "Europe/Paris" > /etc/timezone
 
   esac
 }
 
-function zshrc_template() {
+zshrc_template() {
   _HOME=$1; 
   _THEME=$2; shift; shift
   _PLUGINS=$*;
@@ -186,7 +170,7 @@ EOM
   printf "\nsource \$ZSH/oh-my-zsh.sh\n"
 }
 
-function powerline10k_config() {
+powerline10k_config() {
   cat <<EOM
 POWERLEVEL9K_SHORTEN_STRATEGY="truncate_to_last"
 POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(user dir vcs status)
@@ -196,7 +180,7 @@ POWERLEVEL9K_STATUS_CROSS=true
 EOM
 }
 
-function symlink() {
+symlink() {
   src="$1"
   dest="$2"
 
@@ -266,57 +250,6 @@ fi
 # Istall pyenv, nvm, rvm, linuxbrew, ... in home directory
 cd ~
 
-# Install pyenv
-curl https://pyenv.run | bash
-echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.profile
-echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.profile
-echo 'eval "$(pyenv init --path)"' >> ~/profile
-echo 'eval "$(pyenv init -)"' >> $HOME/.bashrc
-echo 'eval "$(pyenv virtualenv-init -)"' >> $HOME/.bashrc
-. ~/.bashrc
-pyenv install $PYTHON_VERSION
-pyenv global $PYTHON_VERSION
-pip install --upgrade pip
-pip install \
-  neovim \
-  pynvim \
-  jupyter \
-  python-language-server \
-  flake8 \
-  ipython \
-  Cython
-
-# Install nvm
-curl --silent -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
-. $NVM_DIR/nvm.sh
-nvm install $NODE_VERSION
-nvm alias default $NODE_VERSION
-nvm use default
-nvm install $NODE_LTS_VERSION
-nvm use $NODE_LTS_VERSION
-
-# Install linuxbrew
-git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew 
-mkdir ~/.linuxbrew/bin
-ln -s ../Homebrew/bin/brew ~/.linuxbrew/bin
-eval $(~/.linuxbrew/bin/brew shellenv)
-brew tap homebrew/core
-brew tap buo/cask-upgrade
-brew tap jakewmeyer/geo
-brew tap neovim/neovim
-brew tap universal-ctags/universal-ctags
-
-# Install rvm
-gpg2 --keyserver hkp://keys.gnupg.net --recv-keys D39DC0E3
-curl -L https://get.rvm.io | bash -s stable
-rvm requirements
-rvm install 3.0.8
-rvm alias create 3.0 ruby-3.0.8
-rvm use --default 3.0.8
-gem install bundler --no-ri --no-rdoc
-rvm cleanup all
-
-
 # Clone github dotfiles into $BASE_DIR
 if [ -d "$BASE_DIR/.git" ]; then
   echo "Updating dotfiles using existing git..."
@@ -353,8 +286,8 @@ test -e "$BASE_DIR/.vim/.vimrc_before" && symlink "$BASE_DIR/.vim/.vimrc_before"
 test -e "$BASE_DIR/.vim/.vimrc_bundles" && symlink "$BASE_DIR/.vim/.vimrc_bundles" "$HOME/.vimrc_bundles"
 test -e "$BASE_DIR/.vim/.gvimrc" && symlink "$BASE_DIR/.vim/.gvimrc" "$HOME/.gvimrc"
 
-cat "$BASE_DIR/.bashrc" >> $HOME/.bashrc
-cat "$BASE_DIR/.zshrc" >> $HOME/.zshrc
+cat "$BASE_DIR/bashrc" >> $HOME/.bashrc
+cat "$BASE_DIR/zshrc" >> $HOME/.zshrc
 
 # Symlink dotfiles/bin to $HOME/bin
 echo "Adding executables to ~/bin/..."

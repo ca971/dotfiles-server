@@ -8,105 +8,45 @@ LABEL Description="ca971 Debian For Dev"
 # Set shell command by SHELL [ “/bin/bash”, “-l”, “-c” ] and simply call RUN ....
 SHELL [ "/bin/bash", "-l", "-c" ]
 
-# tmp as working directory
-WORKDIR /tmp
 
-ENV XDG_CONFIG_HOME="$HOME/.config"
+ARG USER_NAME=ca971
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
 
-#ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
-#ENV PATH $PYENV_ROOT/shims:$PYENV_ROOT/bin:$NVM_DIR/bin:/usr/local/rvm/bin:$HOME/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
-#ENV PATH=$HOME/.linuxbrew/bin:$PATH
-
-# "ca971" user for "Vscode Remote Docker Container"
-#ARG USER_NAME=ca971
-#ARG USER_UID=1000
-#ARG USER_GID=$USER_UID
-
-#  && echo $USER_NAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USER_NAME \
-#  && chmod 0440 /etc/sudoers.d/$USER_NAME \
-
-# Non privilegged User
-ARG USER_NAME="ca971"
-ARG USER_PASSWORD="p@$$w0d"
-
-ENV USER_NAME $USER_NAME
-ENV USER_PASSWORD $USER_PASSWORD
+RUN groupadd --gid $USER_GID $USER_NAME \
+    && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USER_NAME \
+    && apt-get update \
+    && apt-get install -y sudo wget \
+    && echo $USER_NAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USER_NAME \
+    && chmod 0440 /etc/sudoers.d/$USER_NAME \
+    && apt-get autoremove -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
 
 # Add a non-privileged user
 #RUN adduser --quiet --disabled-password --shell $(which zsh) --home /home/$USER_NAME --gecos "User" $USER_NAME && \
 #  echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd && usermod -aG sudo $USER_NAME
 
-# Package bundle
-#RUN groupadd --gid $USER_GID $USER_NAME \
-#  && useradd -s $(which bash) --uid $USER_UID --gid $USER_GID -m $USER_NAME \
-RUN apt-get -qq update && apt-get -qq upgrade \
-  && apt-get -qq install -y --no-install-recommends \
-  autoconf \
-  automake \
-  bind9-host \
-  build-essential \
-  ca-certificates \
-  dirmngr \
-  exa \
-  gnupg \
-  gnupg2 \
-  curl \
-  fasd \
-  file \
-  git-core \
-  libbz2-dev \
-  libffi-dev \
-  libgdbm-dev \
-  libncurses5-dev \
-  libnss3-dev \
-  libreadline-dev \
-  libsqlite3-dev \
-  libssl-dev \
-  locales \
-  lsof \
-  make \
-  netcat \
-  nmap \
-  net-tools \
-  python3-pip \
-  ruby \
-  ruby-dev \
-  scala \
-  socat \
-  software-properties-common \
-  strace \
-  sudo \
-  sysstat \
-  tcpdump \
-  unzip \
-  zip \
-  zsh-syntax-highlighting \
-  tmux \
-  wget \
-  zlib1g-dev \
-  zsh \
-  vim \
-  neovim \
-  python3-venv \
-  && adduser --quiet --disabled-password --shell $(which zsh) --home /home/$USER_NAME --gecos "User" $USER_NAME \
-  && echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd && usermod -aG sudo $USER_NAME \
-  && echo $USER_NAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USER_NAME \
-  && chmod 0440 /etc/sudoers.d/$USER_NAME \
-  && apt-get -y -qq autoremove \
-  && apt-get -qq clean \
-  && rm -rf /var/lib/apt/lists/* /dotfiles/* /var/dotfiles/*
+USER $USER_NAME
 
-# Configure locales
-RUN locale-gen --purge fr_FR.UTF-8 \
-  && echo -e 'LANG="fr_FR.UTF-8"\nLANGUAGE="fr_FR:fr"\n' > /etc/default/locale \
-  && echo "Europe/Paris" > /etc/timezone
-
-# Add a non-privileged user
-#RUN adduser --quiet --disabled-password --shell $(which zsh) --home /home/$USER_NAME --gecos "User" $USER_NAME && \
-#  echo "${USER_NAME}:${USER_PASSWORD}" | chpasswd && usermod -aG sudo $USER_NAME
-
-#USER $USER_NAME
-
+# Install Oh-my-zsh with zsh-in-docker
+# https://github.com/deluan/zsh-in-docker/blob/master/Dockerfile
+# RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.1/zsh-in-docker.sh)" -- \
+COPY zsh-docker.sh /tmp
+RUN /tmp/zsh-docker.sh \
+    -t https://github.com/denysdovhan/spaceship-prompt \
+    -a 'SPACESHIP_PROMPT_ADD_NEWLINE="false"' \
+    -a 'SPACESHIP_PROMPT_SEPARATE_LINE="false"' \
+    -p git \
+    -p sudo \
+    -p vi-mode \
+    -p https://github.com/zsh-users/zsh-autosuggestions \
+    -p https://github.com/zsh-users/zsh-completions \
+    -p https://github.com/zsh-users/zsh-history-substring-search \
+    -p https://github.com/zsh-users/zsh-syntax-highlighting \
+    -p 'history-substring-search' \
+    -a 'bindkey "\$terminfo[kcuu1]" history-substring-search-up' \
+    -a 'bindkey "\$terminfo[kcud1]" history-substring-search-down'
 #RUN mkdir -p $XDG_CONFIG_HOME
 
 # Install pyenv, pyenv-virtualenv and default python version
@@ -123,6 +63,9 @@ RUN locale-gen --purge fr_FR.UTF-8 \
 #ENV PYTHON_VERSION=$(cat .python-version)
 
 RUN curl https://pyenv.run | bash
+
+RUN git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+
 #  && echo 'export PYENV_ROOT="$HOME/.pyenv"' >> $HOME/.profile \
 #  && echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.profile \
 #  && echo 'eval "$(pyenv init --path)"' >> ~/profile \
@@ -148,7 +91,6 @@ RUN curl https://pyenv.run | bash
 #  && nvm install && nvm use \
 #  && node -v && npm -v
 
-ENV NVM_DIR ~/.nvm
 #ENV NODE_VERSION 16.4.2
 ENV NODE_VERSION node
 ENV NODE_LTS_VERSION 14.17.3
@@ -211,22 +153,6 @@ RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
   && brew tap universal-ctags/universal-ctags
 
 
-
-
-# Install Oh-my-zsh with zsh-in-docker
-# https://github.com/deluan/zsh-in-docker/blob/master/Dockerfile
-RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.1/zsh-in-docker.sh)" -- \
-  -t https://github.com/denysdovhan/spaceship-prompt \
-  -a 'SPACESHIP_PROMPT_ADD_NEWLINE="false"' \
-  -a 'SPACESHIP_PROMPT_SEPARATE_LINE="false"' \
-  -p git \
-  -p https://github.com/zsh-users/zsh-autosuggestions \
-  -p https://github.com/zsh-users/zsh-completions \
-  -p https://github.com/zsh-users/zsh-history-substring-search \
-  -p https://github.com/zsh-users/zsh-syntax-highlighting \
-  -p 'history-substring-search' \
-  -a 'bindkey "\$terminfo[kcuu1]" history-substring-search-up' \
-  -a 'bindkey "\$terminfo[kcud1]" history-substring-search-down'
 
 ENTRYPOINT [ "/bin/zsh" ]
 
