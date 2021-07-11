@@ -1,0 +1,6 @@
+#! /usr/local/bin/bash
+# alias: brew d
+#:  * `d` [args...]
+#:    `brew d` is an alias for `brew doctor`
+brew doctor $*
+

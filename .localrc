@@ -20,7 +20,7 @@ command -v nodenv > /dev/null && eval "$(nodenv init -)"
 
 # direnv: https://direnv.net/
 command -v direnv > /dev/null && eval "$(direnv hook $(basename $SHELL))"
-command -v perl > /dev/null && eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
+#command -v perl > /dev/null && eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
 
 # jump : https://github.com/gsamokovarov/jump
 command -v jump > /dev/null && eval "$(jump shell --bind=j)"

@@ -20,7 +20,9 @@ ARG USER_GID=$USER_UID
 # Add sources.list
 COPY sources.list /etc/apt/sources.list
 
-RUN groupadd --gid $USER_GID $USER_NAME \
+RUN \
+    && export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE="1" \
+    && groupadd --gid $USER_GID $USER_NAME \
     && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USER_NAME \
     && apt-get update \
     && apt-get install -y sudo wget \
@@ -113,4 +115,8 @@ RUN apt-get clean -y \
   && apt-get autoremove -y \
   && rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/*
 
-CMD ["/usr/bin/zsh","-l"]
+ADD . $HOME/dotfiles-server
+
+CMD ["/bin/zsh","-l"]
+
+WORKDIR ~

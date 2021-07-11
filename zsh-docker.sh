@@ -137,6 +137,7 @@ install_dependencies() {
         p7zip-full \
         perl \
         procps \
+        python \
         python3-pip \
         python3-venv \
         rar \
@@ -155,10 +156,12 @@ install_dependencies() {
         vim \
         w3m \
         whois \
+        xz-utils \
         zip \
         zlib1g-dev \
         zsh \
 
+      $Sudo for i in 1 2 3 4 5 6 7 8; do mkdir -p /usr/share/man/man$i; done
       if [ "$VERSION" != "14.04" ]; then
         $Sudo apt-get -y install locales-all
       fi
@@ -299,6 +302,7 @@ test -d "~/.fonts" || mkdir ~/.fonts
 wget https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/FiraCode.zip
 unzip FiraCode.zip -d ~/.fonts
 fc-cache -fv
+rm FiraCode.zip
 
 # Switch into $BASE_DIR
 cd "$BASE_DIR"

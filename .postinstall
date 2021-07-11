@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-#vim +PlugUpdate +qall
+nvim +PlugUpdate +PlugUpgrade +qall
 
-echo "All done !!!"
+echo "Nvim and Vim done"

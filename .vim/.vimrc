@@ -225,6 +225,12 @@ call plug#begin('~/.vim/plugged')
   " UI"{{{
   Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes' " Lean & mean status/tabline
   Plug 'ryanoasis/vim-devicons' " Add icons to plugins
+  Plug 'neoclide/coc.nvim', { 'branch': 'release' } " Coc Explorer
+  Plug 'junegunn/fzf', {
+        \ 'dir': '~/.fzf',
+        \ 'do': './install --all --no-update-rc',
+        \}
+  Plug 'junegunn/fzf.vim' " Search faster
   Plug 'tpope/vim-eunuch' " UNIX shell commands in Vim
   Plug 'preservim/nerdtree' " File system explorer for the Vim editor
   Plug 'jistr/vim-nerdtree-tabs' " NERDTree feel like a true panel, independent of tabs
@@ -305,6 +311,83 @@ if isdirectory(expand('~/.vim/plugged/vim-airline/'))
 
   let g:airline_section_b = '%{strftime("%A %d %B %Y * %H:%M")}'
   let g:airline_section_z = "%p%% * \ue0a1:%l/%L * \ue0a3:%c"
+endif
+"}}}
+" Fzf.vim"{{{
+" https://github.com/junegunn/fzf.vim.git
+if isdirectory(expand('~/.vim/plugged/fzf.vim/'))
+  " Fzf {{{
+  let g:which_key_map.f = {
+    \ 'name' : '+fzf-CommentFrame'       ,
+    \ 'A'    : ['Ag'        , 'ag-search-result']        ,
+    \ 'B'    : ['Buffers'   , 'open-buffers']            ,
+    \ 'K'    : ['Commands'  , 'commands']                ,
+    \ 'C'    : ['Colors'    , 'color-schemes']           ,
+    \ 'f'    : ['Files'     , 'files-path']              ,
+    \ 'F'    : ['Filetypes' , 'file-types']              ,
+    \ 'g'    : ['GFiles?'   , 'git-status']              ,
+    \ 'G'    : ['GFiles'    , 'git-ls-files']            ,
+    \ 'h'    : ['History'   , 'recent-files']            ,
+    \ 'H'    : ['History:'  , 'command-history']         ,
+    \ 'l'    : ['BLines'    , 'lines-in-current-buffer'] ,
+    \ 'L'    : ['Lines'     , 'lines-in-loaded-buffers'] ,
+    \ 'm'    : ['Maps'      , 'normal-mode-mappings']    ,
+    \ 'M'    : ['Marks'     , 'marks']                   ,
+    \ 'R'    : ['Rg'        , 'rg-search-result']        ,
+    \ 'S'    : ['Snippets'  , 'snippets']                ,
+    \ 't'    : ['BTags'     , 'tags-in-current-buffer']  ,
+    \ 'T'    : ['Tags'      , 'tags-in-the-projects']    ,
+    \ 'W'    : ['Windows'   , 'windows']                 ,
+    \ '/'    : ['History/'  , 'search-history']          ,
+    \ }
+"}}}
+  " Set FZF_DEFAULT_COMMAND{{{
+  let $FZF_DEFAULT_COMMAND = 'rg --files --follow -g "!{.git,node_modules}/*" 2>/dev/null'
+
+  command! -bang -nargs=* Rg
+    \ call fzf#vim#grep(
+    \   'rg --column --line-number --no-heading --color=always --smart-case -g "!{*.lock,*-lock.json}" '.shellescape(<q-args>), 1,
+    \   <bang>0 ? fzf#vim#with_preview('up:40%')
+    \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+    \   <bang>0)
+"}}}
+  " function! s:update_fzf_colors(){{{
+  " FZF color scheme updater from https://github.com/junegunn/fzf.vim/issues/59
+  function! s:update_fzf_colors()
+    let rules =
+    \ { 'fg':      [['Normal',       'fg']],
+      \ 'bg':      [['Normal',       'bg']],
+      \ 'hl':      [['String',       'fg']],
+      \ 'fg+':     [['CursorColumn', 'fg'], ['Normal', 'fg']],
+      \ 'bg+':     [['CursorColumn', 'bg']],
+      \ 'hl+':     [['String',       'fg']],
+      \ 'info':    [['PreProc',      'fg']],
+      \ 'prompt':  [['Conditional',  'fg']],
+      \ 'pointer': [['Exception',    'fg']],
+      \ 'marker':  [['Keyword',      'fg']],
+      \ 'spinner': [['Label',        'fg']],
+      \ 'header':  [['Comment',      'fg']] }
+    let cols = []
+    for [name, pairs] in items(rules)
+      for pair in pairs
+        let code = synIDattr(synIDtrans(hlID(pair[0])), pair[1])
+        if !empty(name) && code != ''
+          call add(cols, name.':'.code)
+          break
+        endif
+      endfor
+    endfor
+    let s:orig_fzf_default_opts = get(s:, 'orig_fzf_default_opts', $FZF_DEFAULT_OPTS)
+    let $FZF_DEFAULT_OPTS = s:orig_fzf_default_opts .
+          \ (empty(cols) ? '' : (' --color='.join(cols, ',')))
+  endfunction
+"}}}
+  " VimEnter, ColorScheme : call update_fzf_colors(){{{
+  augroup _fzf
+    autocmd!
+    autocmd VimEnter,ColorScheme * call <sid>update_fzf_colors()
+  augroup END
+"}}}
 endif
 "}}}
 " NerdTree"{{{
