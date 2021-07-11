@@ -97,7 +97,6 @@ RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
   && brew tap buo/cask-upgrade \
   && brew tap jakewmeyer/geo \
   && brew tap neovim/neovim \
-  && brew tap universal-ctags/universal-ctags \
-  && brew update && brew upgrade && brew install font-fira-code-nerd-font
+  && brew tap universal-ctags/universal-ctags
 
 CMD ["/usr/bin/zsh","-l"]

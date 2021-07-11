@@ -96,9 +96,11 @@ install_dependencies() {
       $Sudo apt-get -y install \
         autoconf \
         automake \
+        bat \
         bind9-host \
         build-essential \
         ca-certificates \
+        dfc \
         dirmngr \
         exa \
         gnupg \
@@ -106,6 +108,7 @@ install_dependencies() {
         curl \
         fasd \
         file \
+        fontconfig \
         git-core \
         htop \
         libbz2-dev \
@@ -149,6 +152,7 @@ install_dependencies() {
         $Sudo apt-get -y install locales-all
       fi
       $Sudo locale-gen --purge fr_FR.UTF-8
+      $Sudo echo "Europe/Paris" > /etc/timezone
 
   esac
 }
@@ -219,6 +223,7 @@ symlink() {
 
 install_dependencies
 
+# Switch into tmp directory
 cd /tmp
 
 # Install On-My-Zsh
@@ -271,10 +276,16 @@ else
   git clone --quiet --depth=1 "$REPO_URL" "$BASE_DIR"
 fi
 
-# Make config, local, cache directories
+# Make config, local, cache, fonts directories
 test -d "~/.config" || mkdir ~/.config
 test -d "~/.local" || mkdir ~/.local
 test -d "~/.cache" || mkdir ~/.cache
+test -d "~/.fonts" || mkdir ~/.fonts
+
+# Install FiraCode nerdfonts
+wget https://github.com/ryanoasis/nerd-fonts/releases/download/v2.1.0/FiraCode.zip
+unzip FiraCode.zip -d ~/.fonts
+fc-cache -fv
 
 # Switch into $BASE_DIR
 cd "$BASE_DIR"
