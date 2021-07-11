@@ -38,24 +38,22 @@ alias NUL='> /dev/null 2>&1'
 # =============================================================================
 # Use exa, if it is available
 if command -v exa >/dev/null; then
-  EXA_OPTIONS='--icons'
+  # general use
   alias ll='exa -lGh'
-  alias ls='exa -h $EXA_OPTIONS'
-  alias lsa='exa -ah $EXA_OPTIONS'
-  alias l='exa -labhGF --time-style long-iso --git $EXA_OPTIONS'
-  alias li='exa -labhiGF --time-style long-iso --git $EXA_OPTIONS'
-  alias ll='exa -labhF --git --time-style long-iso $EXA_OPTIONS'
+  alias ls='exa -h'
+  alias lsa='exa -ah'
+  alias l='exa -labhGF --time-style long-iso --git'
+  alias li='exa -labhiGF --time-style long-iso --git'
+  alias ll='exa -labhF --git --time-style long-iso'
   alias lh='ls -lh (*|.*)(@)'
   alias llh='ls -lah | grep "^l"'
-  alias llm='exa -lbhGd --git --sort=modified $EXA_OPTIONS'
+  alias llm='exa -lbhGd --git --sort=modified'
   alias la='exa -lbhHigUmuSa --time-style long-iso --git --color-scale'
   alias lx='exa -lbhHigUmuSa@ --time-style long-iso --git --color-scale'
   # specialty views
   alias lS='exa -1'
   alias lt='exa --tree --level=2'
-
 else
-
   #alias ll='ls -laFh --time-style "+%d-%h-%Y %H:%M"'
   #alias l='ls -CF'
   alias ll='ls -lGh'

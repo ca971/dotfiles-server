@@ -97,7 +97,6 @@ install_dependencies() {
         apt-utils \
         autoconf \
         automake \
-        bat \
         bind9-host \
         bsdmainutils \
         build-essential \
@@ -139,7 +138,7 @@ install_dependencies() {
         perl \
         procps \
         python3-pip \
-        python3-venv
+        python3-venv \
         rar \
         ruby \
         ruby-dev \

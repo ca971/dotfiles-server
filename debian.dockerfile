@@ -12,12 +12,13 @@ ENV DEBCONF_NONINTERACTIVE_SEEN true
 # Set shell command by SHELL [ “/bin/bash”, “-l”, “-c” ] and simply call RUN ....
 SHELL [ "/bin/bash", "-l", "-c" ]
 
-COPY sources.list /etc/apt/sources.list
-
 # Non privileged user
 ARG USER_NAME=ca971
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
+
+# Add sources.list
+COPY sources.list /etc/apt/sources.list
 
 RUN groupadd --gid $USER_GID $USER_NAME \
     && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USER_NAME \
