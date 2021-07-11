@@ -1,13 +1,18 @@
-ARG version latest
+ARG version buster
 FROM debian:${version:-latest}
 
 MAINTAINER ca971
 
 LABEL Description="ca971 Debian For Dev"
 
+# Non Interactive MODE
+ENV DEBIAN_FRONTEND noninteractive
+ENV DEBCONF_NONINTERACTIVE_SEEN true
+
 # Set shell command by SHELL [ “/bin/bash”, “-l”, “-c” ] and simply call RUN ....
 SHELL [ "/bin/bash", "-l", "-c" ]
 
+COPY sources.list /etc/apt/sources.list
 
 # Non privileged user
 ARG USER_NAME=ca971
@@ -19,10 +24,7 @@ RUN groupadd --gid $USER_GID $USER_NAME \
     && apt-get update \
     && apt-get install -y sudo wget \
     && echo $USER_NAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USER_NAME \
-    && chmod 0440 /etc/sudoers.d/$USER_NAME \
-    && apt-get autoremove -y \
-    && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*
+    && chmod 0440 /etc/sudoers.d/$USER_NAME
 
 # Add a non-privileged user
 #USER $USER_NAME
@@ -47,10 +49,14 @@ RUN /tmp/zsh-docker.sh \
     -a 'bindkey "\$terminfo[kcuu1]" history-substring-search-up' \
     -a 'bindkey "\$terminfo[kcud1]" history-substring-search-down'
 
+WORKDIR /tmp
+
+ENV PYTHON_VERSION 3.9.6
+
 # Install Python from source
-RUN wget https://www.python.org/ftp/python/3.9.6/Python-3.9.6.tgz \
-  && tar xf Python-3.9.6.tgz \
-  && cd Python-3.9.6/ \
+RUN wget -P /tmp https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tgz \
+  && tar xf Python-$PYTHON_VERSION.tgz \
+  && cd Python-$PYTHON_VERSION/ \
   && ./configure --enable-optimizations \
   && make -j 2 \
   && sudo make altinstall
@@ -58,10 +64,8 @@ RUN wget https://www.python.org/ftp/python/3.9.6/Python-3.9.6.tgz \
 # Install pyenv, pyenv-virtualenv and default python version
 ENV PYTHONDONTWRITEBYTECODE true
 ENV PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV true
-ENV PYTHON_VERSION 3.9.6
 
 COPY requirements.txt /tmp
-WORKDIR /tmp
 
 # Install Pyenv
 RUN curl https://pyenv.run | bash
@@ -98,5 +102,14 @@ RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
   && brew tap jakewmeyer/geo \
   && brew tap neovim/neovim \
   && brew tap universal-ctags/universal-ctags
+
+# Set PATH
+ENV PATH=~/.pyenv/shims:~/.pyenv/bin:~/.rbenv/shims:~/.rbenv/bin:~/.nvm/bin:/usr/local/rvm/bin:~/.linuxbrew/bin:$PATH:/usr/games
+
+# Clean and erase apt cache
+RUN apt-get clean -y \
+  && apt-get autoclean -y \
+  && apt-get autoremove -y \
+  && rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/*
 
 CMD ["/usr/bin/zsh","-l"]

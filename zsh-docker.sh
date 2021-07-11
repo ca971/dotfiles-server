@@ -94,12 +94,15 @@ install_dependencies() {
       $Sudo apt-get update
       #$Sudo apt-get -y install git curl zsh locales
       $Sudo apt-get -y install \
+        apt-utils \
         autoconf \
         automake \
         bat \
         bind9-host \
+        bsdmainutils \
         build-essential \
         ca-certificates \
+        cowsay \
         dfc \
         dirmngr \
         exa \
@@ -111,6 +114,7 @@ install_dependencies() {
         fontconfig \
         git-core \
         htop \
+        hwinfo \
         libbz2-dev \
         libffi-dev \
         libgdbm-dev \
@@ -120,38 +124,48 @@ install_dependencies() {
         libsqlite3-dev \
         libssl-dev \
         locales \
+        localepurge \
         lsof \
         make \
         most \
-        man-db \
+        man \
+        neofetch \
         netcat \
         nmap \
         net-tools \
+        neovim \
+        openssh-server \
+        p7zip-full \
         perl \
         procps \
         python3-pip \
+        python3-venv
+        rar \
         ruby \
         ruby-dev \
         scala \
+        sl \
         socat \
         software-properties-common \
         strace \
         sysstat \
         tcpdump \
-        unzip \
-        zip \
-        zsh-syntax-highlighting \
         tmux \
+        unzip \
+        unrar \
+        vim \
+        w3m \
+        whois \
+        zip \
         zlib1g-dev \
         zsh \
-        vim \
-        neovim \
-        python3-venv
 
       if [ "$VERSION" != "14.04" ]; then
         $Sudo apt-get -y install locales-all
       fi
+      $Sudo echo "LANG=fr_FR.UTF-8" >/etc/default/locale
       $Sudo locale-gen --purge fr_FR.UTF-8
+      $Sudo update-locale LANG=fr_FR.UTF-8
       $Sudo echo "Europe/Paris" > /etc/timezone
 
   esac
