@@ -239,6 +239,11 @@ symlink() {
   ln -sf "$src" "$dest"
 }
 
+# Create /usr/local/share/zsh-syntax-highlighting/highlighters
+mkdir -p /usr/local/share/zsh-syntax-highlighting/highlighters
+
+
+# Install all dependencies
 install_dependencies
 
 # Switch into tmp directory

@@ -91,67 +91,8 @@ RUN eval "$(pyenv init -)"
 RUN eval "$(pyenv virtualenv-init -)"
 #RUN eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)"
 
-
 # Install Rbenv
 RUN git clone https://github.com/rbenv/rbenv.git ~/.rbenv
-
-# Install nvm and default Node version
-#ENV NVM_DIR ~/
-#ENV NODE_VERSION 16.4.2
-#ENV NODE_LTS_VERSION 14.17.3
-
-#RUN curl --silent -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
-#RUN nvm install $NODE_VERSION \
-#  && nvm alias default $NODE_VERSION \
-#  && nvm use default \
-#  && nvm install $NODE_LTS_VERSION \
-#  && nvm use $NODE_LTS_VERSION
-
-# Install nvm and default Node version
-ENV NODE_VERSION node
-ENV NODE_LTS_VERSION 14.17.3
-
-RUN echo 'export NVM_DIR="$HOME/.nvm"'                                       >> "$HOME/.zshrc"
-RUN echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> "$HOME/.zshrc"
-RUN echo 'export NVM_DIR="$HOME/.nvm"'                                       >> "$HOME/.basshrc"
-RUN echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> "$HOME/.bashrc"
-RUN echo '[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion" # This loads nvm bash_completion' >> "$HOME/.bashrc"
-
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/install.sh | bash
-
-# nodejs and tools
-RUN bash -c ' source $HOME/.nvm/nvm.sh \
-    && nvm install $NODE_VERSION \
-  && nvm alias default $NODE_VERSION \
-  && nvm use default \
-  && nvm install $NODE_LTS_VERSION \
-  && nvm use $NODE_LTS_VERSION \
-  && npm install -g yarn \
-  && npm install --prefix "$HOME/.nvm/"'
-
-#ENV NVM_DIR ~/.nvm
-
-#RUN curl --silent -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
-#RUN echo 'source $NVM_DIR/nvm.sh' >> $HOME/.bashrc
-#RUN nvm install && nvm use
-#  && node -v && npm -v
-#ENV NVM_VERSION 0.38.0
-#ENV NODE_VERSION 16.4.2
-#ENV NODE_LTS_VERSION 14.17.3
-
-#RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash && nvm install 10.15.3
-
-#RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/install.sh | bash \
-#    && source ~/.nvm/nvm.sh \
-#    && nvm install $NODE_VERSION \
-#    && nvm alias default $NODE_VERSION \
-#    && nvm use default \
-#    && nvm install $NODE_LTS_VERSION \
-#    && nvm use $NODE_LTS_VERSION
-#
-#ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
-#ENV PATH      $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
-
 
 # Install Homebrew for linux
 #ENV PATH=$HOME/.linuxbrew/bin:$PATH
@@ -165,7 +106,11 @@ RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
   && brew tap buo/cask-upgrade \
   && brew tap jakewmeyer/geo \
   && brew tap neovim/neovim \
-  && brew tap universal-ctags/universal-ctags
+  && brew tap universal-ctags/universal-ctags \
+  && brew update && brew install \
+  nvm \
+  bat \
+  fzf
 
 # Set PATH
 ENV PATH=~/.pyenv/shims:~/.pyenv/bin:~/.rbenv/shims:~/.rbenv/bin:~/.nvm/bin:/usr/local/rvm/bin:~/.linuxbrew/bin:$PATH:/usr/games

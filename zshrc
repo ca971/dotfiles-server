@@ -1,5 +1,4 @@
-#
-export FZF_BASE="${HOME}/.fzf"
+command -v fzf > /dev/null && export FZF_BASE="${HOME}/.fzf"
 
 # Colors
 # ============================================================================

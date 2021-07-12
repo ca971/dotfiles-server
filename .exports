@@ -182,7 +182,7 @@ if [ -n "$ZSH_VERSION" ]; then
 
   # Oh-my-zsh
   # ---------------------------------------------------------------------------
-  #export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR=/usr/local/share/zsh-syntax-highlighting/highlighters
+  export ZSH_HIGHLIGHT_HIGHLIGHTERS_DIR=/usr/local/share/zsh-syntax-highlighting/highlighters
 fi
 
 
