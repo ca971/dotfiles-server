@@ -10,6 +10,7 @@ alias g='git'
 #alias j='jobs' # Jump is bind to 'j'
 alias rmf='rm -rf'
 alias mkdir='mkdir -pv'
+alias pip="pip3"
 
 is_zsh && alias h='fc -El 0' || alias h='history'
 

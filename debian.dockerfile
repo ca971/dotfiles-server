@@ -59,6 +59,8 @@ RUN /tmp/zsh-docker.sh \
     -p fzf \
     -p vi-mode \
     -p https://github.com/zsh-users/zsh-autosuggestions \
+    -a 'ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#005073,bold,underline"' \
+    -p https://github.com/paulirish/git-open \
     -p https://github.com/zsh-users/zsh-completions \
     -p https://github.com/zsh-users/zsh-history-substring-search \
     -p https://github.com/zsh-users/zsh-syntax-highlighting \
@@ -78,6 +80,11 @@ RUN wget -P /tmp https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHO
   && make -j 2 \
   && sudo make altinstall
 
+# Set python3 and pip3 as default python
+RUN update-alternatives --install /usr/bin/python python /usr/local/bin/python${PYTHON_VERSION%.*} 1
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python2.7 2
+RUN update-alternatives --install /usr/bin/pip pip /usr/local/bin/pip${PYTHON_VERSION%.*} 1
+
 # Install pyenv, pyenv-virtualenv and default python version
 ENV PYTHONDONTWRITEBYTECODE true
 ENV PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV true
@@ -85,20 +92,24 @@ ENV PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV true
 COPY requirements.txt /tmp
 
 # Install Pyenv
-RUN curl https://pyenv.run | bash
-RUN eval "$(pyenv init --path)"
-RUN eval "$(pyenv init -)"
-RUN eval "$(pyenv virtualenv-init -)"
+#RUN curl https://pyenv.run | bash
+#RUN eval "$(pyenv init --path)"
+#RUN eval "$(pyenv init -)"
+#RUN eval "$(pyenv virtualenv-init -)"
 #RUN eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)"
 
 # Install Rbenv
-RUN git clone https://github.com/rbenv/rbenv.git ~/.rbenv
+#RUN git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 
 # Install Homebrew for linux
 #ENV PATH=$HOME/.linuxbrew/bin:$PATH
 
 RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
-  && mkdir ~/.linuxbrew/bin \
+  && mkdir \
+    ~/.linuxbrew/bin \
+    ~/.nvm \
+    ~/.pyenv \
+    ~/.rbenv \
   && ln -s ../Homebrew/bin/brew ~/.linuxbrew/bin \
   && eval $(~/.linuxbrew/bin/brew shellenv) \
   && brew --version \
@@ -110,11 +121,20 @@ RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
   && brew tap homebrew/aliases \
   && brew update && brew install \
   nvm \
+  pyenv \
+  rbenv \
   bat \
   fzf
 
 # Set PATH
 ENV PATH=~/.pyenv/shims:~/.pyenv/bin:~/.rbenv/shims:~/.rbenv/bin:~/.nvm/bin:/usr/local/rvm/bin:~/.linuxbrew/bin:$PATH:/usr/games
+
+RUN nvm install node \
+  && nvm alias default node \
+  && nvm use default \
+  && nvm install --lts \
+  && nvm use --lts \
+  && npm -g install yarn
 
 # Clean and erase apt cache
 RUN apt-get clean -y \

@@ -46,7 +46,7 @@ unset p paths
 #    export EDITOR="vim" VISUAL="$EDITOR"
 #fi
 
-export EDITOR="nvim" VISUAL="$EDITOR"
+command -v nvim > /dev/null && export EDITOR="nvim" VISUAL="$EDITOR"
 
 # Exa (121, 75, 33)
 # =============================================================================
