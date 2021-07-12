@@ -3,13 +3,13 @@
 # https://varrette.gforge.uni.lu/blog/2019/09/10/using-pyenv-virtualenv-direnv/
 
 # https://github.com/rbenv/rbenv
-eval "$(rbenv init -)"
+command -v rbenv > /dev/null && eval "$(rbenv init -)"
 
 # pyenv: https://github.com/pyenv/pyenv
-eval "$(pyenv init -)"
+command -v pyenv > /dev/null && eval "$(pyenv init -)"
 
 # pyenv-virtualenv: https://github.com/pyenv/pyenv-virtualenv
-eval "$(pyenv virtualenv-init -)"
+command -v pyenv-virtualenv-init > /dev/null && eval "$(pyenv virtualenv-init -)"
 
 # https://github.com/nodenv/nodenv
 command -v nodenv > /dev/null && eval "$(nodenv init -)"
@@ -22,7 +22,7 @@ command -v direnv > /dev/null && eval "$(direnv hook $(basename $SHELL))"
 command -v jump > /dev/null && eval "$(jump shell --bind=j)"
 
 # https://github.com/clvv/fasd
-eval "$(fasd --init auto)"
+command -v fasd > /dev/null && eval "$(fasd --init auto)"
 
 # Rbenv, pyenv, nodenv, direnv
 # ----------------------------------------------------------------------------

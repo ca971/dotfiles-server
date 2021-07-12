@@ -119,7 +119,7 @@ install_dependencies() {
         libbz2-dev \
         libffi-dev \
         libgdbm-dev \
-        liblzma-dev
+        liblzma-dev \
         libncurses5-dev \
         libncursesw5-dev \
         libnss3-dev \
