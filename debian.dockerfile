@@ -128,11 +128,22 @@ RUN \
   && nvm use --lts \
   && npm install -g yarn
 
+RUN \
+    pyenv install $PYTHON_VERSION \
+    && pyenv virtualenv $PYTHON_VERSION python_3 \
+    && pyenv global python_3
+
+RUN \
+    pip install --upgrade pip \
+    pip install -r /tmp/requirements.txt
+
+
 # Clean and erase apt cache
 RUN apt-get clean -y \
   && apt-get autoclean -y \
   && apt-get autoremove -y \
   && rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/*
+
 
 # Tells systemd that it's running inside a Docker container environment
 ENV container docker

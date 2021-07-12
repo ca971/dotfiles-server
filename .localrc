@@ -1,19 +1,15 @@
-# Fzf
-# ----------------------------------------------------------------------------
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
 # Rbenv, pyenv, nodenv, direnv
 # ----------------------------------------------------------------------------
 # https://varrette.gforge.uni.lu/blog/2019/09/10/using-pyenv-virtualenv-direnv/
 
 # https://github.com/rbenv/rbenv
-command -v rbenv > /dev/null && eval "$(rbenv init -)"
+eval "$(rbenv init -)"
 
 # pyenv: https://github.com/pyenv/pyenv
-command -v pyenv > /dev/null && eval "$(pyenv init -)"
+eval "$(pyenv init -)"
 
 # pyenv-virtualenv: https://github.com/pyenv/pyenv-virtualenv
-command -v pyenv-virtualenv-init > /dev/null && eval "$(pyenv virtualenv-init -)"
+eval "$(pyenv virtualenv-init -)"
 
 # https://github.com/nodenv/nodenv
 command -v nodenv > /dev/null && eval "$(nodenv init -)"
@@ -26,7 +22,7 @@ command -v direnv > /dev/null && eval "$(direnv hook $(basename $SHELL))"
 command -v jump > /dev/null && eval "$(jump shell --bind=j)"
 
 # https://github.com/clvv/fasd
-command -v fasd > /dev/null && eval "$(fasd --init auto)"
+eval "$(fasd --init auto)"
 
 # Rbenv, pyenv, nodenv, direnv
 # ----------------------------------------------------------------------------
@@ -47,5 +43,9 @@ export NVM_DIR="$HOME/.nvm"
 if [ is_linux -a -r "$HOME/.Xresources" ]; then
   command -v xrdb &>/dev/null 2>&1 && xrdb "$HOME/.Xresources"
 fi
+
+# Fzf
+# ----------------------------------------------------------------------------
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # vim: set ft=zsh:
