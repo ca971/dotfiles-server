@@ -34,6 +34,9 @@ command -v fasd > /dev/null && eval "$(fasd --init auto)"
 # Homebrew on Linux
 # ----------------------------------------------------------------------------
 test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
+
+# NVM via Homebrew
+# ----------------------------------------------------------------------------
 if command -v nvm > /dev/null; then
  export NVM_DIR="$HOME/.nvm"
   [ -s "/root/.linuxbrew/opt/nvm/nvm.sh" ] && . "/root/.linuxbrew/opt/nvm/nvm.sh"  # This loads nvm
