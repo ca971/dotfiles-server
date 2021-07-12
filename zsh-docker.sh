@@ -119,13 +119,16 @@ install_dependencies() {
         libbz2-dev \
         libffi-dev \
         libgdbm-dev \
+        liblzma-dev
         libncurses5-dev \
+        libncursesw5-dev \
         libnss3-dev \
         libreadline-dev \
         libsqlite3-dev \
         libssl-dev \
         locales \
         localepurge \
+        llvm \
         lsof \
         make \
         most \
@@ -153,6 +156,7 @@ install_dependencies() {
         strace \
         sysstat \
         tcpdump \
+        tk-dev \
         tmux \
         unzip \
         unrar \

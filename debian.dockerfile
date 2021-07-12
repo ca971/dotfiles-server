@@ -81,9 +81,10 @@ RUN wget -P /tmp https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHO
   && sudo make altinstall
 
 # Set python3 and pip3 as default python
-RUN update-alternatives --install /usr/bin/python python /usr/local/bin/python${PYTHON_VERSION%.*} 1
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python2.7 2
-RUN update-alternatives --install /usr/bin/pip pip /usr/local/bin/pip${PYTHON_VERSION%.*} 1
+RUN update-alternatives --install /usr/bin/python python /usr/local/bin/python${PYTHON_VERSION%.*} 2
+RUN update-alternatives --install /usr/bin/pip pip /usr/local/bin/pip${PYTHON_VERSION%.*} 2
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
+RUN update-alternatives --install /usr/bin/pip pip /usr/bin/pip2.7 1
 
 # Install pyenv, pyenv-virtualenv and default python version
 ENV PYTHONDONTWRITEBYTECODE true
@@ -91,18 +92,8 @@ ENV PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV true
 
 COPY requirements.txt /tmp
 
-# Install Pyenv
-#RUN curl https://pyenv.run | bash
-#RUN eval "$(pyenv init --path)"
-#RUN eval "$(pyenv init -)"
-#RUN eval "$(pyenv virtualenv-init -)"
-#RUN eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib)"
-
-# Install Rbenv
-#RUN git clone https://github.com/rbenv/rbenv.git ~/.rbenv
-
-# Install Homebrew for linux
-#ENV PATH=$HOME/.linuxbrew/bin:$PATH
+# Set PATH
+ENV PATH=~/.pyenv/shims:~/.pyenv/bin:~/.rbenv/shims:~/.rbenv/bin:~/.nvm/bin:/usr/local/rvm/bin:~/.linuxbrew/bin:$PATH:/usr/games
 
 RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
   && mkdir \
@@ -120,21 +111,22 @@ RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
   && brew tap universal-ctags/universal-ctags \
   && brew tap homebrew/aliases \
   && brew update && brew install \
-  nvm \
   pyenv \
+  pyenv-virtualenv \
+  pipenv \
   rbenv \
   bat \
-  fzf
+  fzf \
+  nvm
 
-# Set PATH
-ENV PATH=~/.pyenv/shims:~/.pyenv/bin:~/.rbenv/shims:~/.rbenv/bin:~/.nvm/bin:/usr/local/rvm/bin:~/.linuxbrew/bin:$PATH:/usr/games
-
-RUN nvm install node \
+RUN \
+    . ~/.linuxbrew/opt/nvm/.nvm.sh \
+  && nvm install node \
   && nvm alias default node \
   && nvm use default \
   && nvm install --lts \
   && nvm use --lts \
-  && npm -g install yarn
+  && npm install -g yarn
 
 # Clean and erase apt cache
 RUN apt-get clean -y \
