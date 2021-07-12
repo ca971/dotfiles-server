@@ -1,4 +1,6 @@
 #
+export FZF_BASE="${HOME}/.fzf"
+
 # Colors
 # ============================================================================
 autoload -U colors && colors

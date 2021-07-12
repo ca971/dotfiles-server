@@ -91,8 +91,8 @@ install_dependencies() {
       ;;
 
     *)
-      $Sudo apt-get update && apt-get upgrade -y
-      $Sudo apt-get install -y --no-install-recommends \
+      $Sudo apt-get -qq update && apt-get -qq upgrade
+      $Sudo apt-get -qq install -y --no-install-recommends \
         apt-utils \
         autoconf \
         automake \
@@ -171,6 +171,7 @@ install_dependencies() {
       $Sudo locale-gen --purge fr_FR.UTF-8
       $Sudo update-locale LANG=fr_FR.UTF-8
       $Sudo echo "Europe/Paris" > /etc/timezone
+      $Sudo mkdir -p /usr/share/man/man{1..9}
 
   esac
 }

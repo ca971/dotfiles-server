@@ -38,13 +38,15 @@ unset p paths
 
 # Editor
 # =============================================================================
-if [[ -n $SSH_CONNECTION ]]; then
-  command -v nvim &>/dev/null && \
-    export EDITOR="nvim" VISUAL="$EDITOR"
-else
-  command -v vim &>/dev/null && \
-    export EDITOR="vim" VISUAL="$EDITOR"
-fi
+#if [[ -n $SSH_CONNECTION ]]; then
+#  command -v nvim &>/dev/null && \
+#    export EDITOR="nvim" VISUAL="$EDITOR"
+#else
+#  command -v vim &>/dev/null && \
+#    export EDITOR="vim" VISUAL="$EDITOR"
+#fi
+
+export EDITOR="nvim" VISUAL="$EDITOR"
 
 # Exa (121, 75, 33)
 # =============================================================================
@@ -108,11 +110,11 @@ fi
 
 # NVM
 # =============================================================================
-if command -v nvm &>/dev/null; then
-  export NVM_DIR="${HOME}/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-fi
+#if command -v nvm &>/dev/null; then
+#  export NVM_DIR="${HOME}/.nvm"
+#  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
+#  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+#fi
 
 # Pager
 # =============================================================================

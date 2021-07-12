@@ -1,11 +1,4 @@
-# This Dockerfile is for building a developement environment only
-# It's note for any distribution / production usage
-#
-# Please note that it'll use about 1.2 GB disk space
-# and about 15 minutes to build this image
-# it depends on your hardware.
-
-ARG version buster
+ARG version bullseye
 FROM debian:${version:-latest}
 
 LABEL maintainer="ca971 <contact@ca971.dev>"
@@ -17,10 +10,10 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV DEBCONF_NONINTERACTIVE_SEEN true
 
 # Set shell command by SHELL [ “/bin/bash”, “-l”, “-c” ] and simply call RUN ....
-#SHELL [ "/bin/bash", "-l", "-c" ]
+SHELL [ "/bin/bash", "-l", "-c" ]
 
 # Set the SHELL to bash with pipefail option
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+#SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Non privileged user
 ARG USER_NAME=ca971
@@ -28,7 +21,7 @@ ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
 # Add sources.list
-COPY sources.list /etc/apt/sources.list
+COPY bullseye-sources.list /etc/apt/sources.list
 
 RUN \
     export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE="1" \
@@ -51,7 +44,7 @@ RUN chmod 0440 /etc/sudoers.d/$USER_NAME
 RUN chown $USER_NAME:$USER_NAME -R "/home/$USER_NAME"
 
 # User "$USER_NAME" as non-root user
-USER $USER_NAME
+#USER $USER_NAME
 
 # Install Oh-my-zsh with zsh-in-docker
 # https://github.com/deluan/zsh-in-docker/blob/master/Dockerfile
@@ -118,19 +111,46 @@ RUN git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 ENV NODE_VERSION node
 ENV NODE_LTS_VERSION 14.17.3
 
-RUN echo 'export NVM_DIR="$HOME/.nvm"'                                       >> "$HOME/.bashrc"
+RUN echo 'export NVM_DIR="$HOME/.nvm"'                                       >> "$HOME/.zshrc"
+RUN echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> "$HOME/.zshrc"
+RUN echo 'export NVM_DIR="$HOME/.nvm"'                                       >> "$HOME/.basshrc"
 RUN echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> "$HOME/.bashrc"
 RUN echo '[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion" # This loads nvm bash_completion' >> "$HOME/.bashrc"
 
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/install.sh | bash
+
 # nodejs and tools
-RUN bash -c 'source $HOME/.nvm/nvm.sh \
-  && nvm install $NODE_VERSION \
+RUN bash -c ' source $HOME/.nvm/nvm.sh \
+    && nvm install $NODE_VERSION \
   && nvm alias default $NODE_VERSION \
   && nvm use default \
   && nvm install $NODE_LTS_VERSION \
   && nvm use $NODE_LTS_VERSION \
   && npm install -g yarn \
   && npm install --prefix "$HOME/.nvm/"'
+
+#ENV NVM_DIR ~/.nvm
+
+#RUN curl --silent -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+#RUN echo 'source $NVM_DIR/nvm.sh' >> $HOME/.bashrc
+#RUN nvm install && nvm use
+#  && node -v && npm -v
+#ENV NVM_VERSION 0.38.0
+#ENV NODE_VERSION 16.4.2
+#ENV NODE_LTS_VERSION 14.17.3
+
+#RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash && nvm install 10.15.3
+
+#RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v${NVM_VERSION}/install.sh | bash \
+#    && source ~/.nvm/nvm.sh \
+#    && nvm install $NODE_VERSION \
+#    && nvm alias default $NODE_VERSION \
+#    && nvm use default \
+#    && nvm install $NODE_LTS_VERSION \
+#    && nvm use $NODE_LTS_VERSION
+#
+#ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
+#ENV PATH      $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
 
 # Install Homebrew for linux
