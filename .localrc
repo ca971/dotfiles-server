@@ -35,5 +35,10 @@ command -v fasd > /dev/null && eval "$(fasd --init auto)"
 # ----------------------------------------------------------------------------
 test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
 
+# Linux
+# ---------------------------------------------------------
+if [ is_linux -a -r "$HOME/.Xresources" ]; then
+  command -v xrdb &>/dev/null 2>&1 && xrdb "$HOME/.Xresources"
+fi
 
 # vim: set ft=zsh:

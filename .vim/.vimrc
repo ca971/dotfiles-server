@@ -207,7 +207,11 @@ command! BufCloseOthers %bd|e#
 command! W w !sudo tee % > /dev/null
 "}}}
 " Update & Upgrade{{{
-command! PU PlugUpdate | PlugUpgrade
+if executable('node')
+  command! PU PlugUpdate | PlugUpgrade | CocUpdate
+else
+  command! PU PlugUpdate | PlugUpgrade
+endif
 "}}}
 " PLUGINS:
 " Vim-Plug install"{{{
@@ -313,6 +317,286 @@ if isdirectory(expand('~/.vim/plugged/vim-airline/'))
   let g:airline_section_z = "%p%% * \ue0a1:%l/%L * \ue0a3:%c"
 endif
 "}}}
+" Coc.nvim"{{{
+" https://github.com/neoclide/coc.nvim.git
+if isdirectory(expand('~/.vim/plugged/coc.nvim/'))
+  if executable('node')
+    " Global extensions{{{
+    let g:coc_global_extensions = [
+          \ 'coc-actions',
+          \ 'coc-css',
+          \ 'coc-emmet',
+          \ 'coc-explorer',
+          \ 'coc-git',
+          \ 'coc-go',
+          \ 'coc-gitignore',
+          \ 'coc-highlight',
+          \ 'coc-html',
+          \ 'coc-java',
+          \ 'coc-jedi',
+          \ 'coc-json',
+          \ 'coc-lists',
+          \ 'coc-pairs',
+          \ 'coc-phpactor',
+          \ 'coc-phpls',
+          \ 'coc-powershell',
+          \ 'coc-prettier',
+          \ 'coc-project',
+          \ 'coc-python',
+          \ 'coc-r-lsp',
+          \ 'coc-syntax',
+          \ 'coc-snippets',
+          \ 'coc-sql',
+          \ 'coc-svg',
+          \ 'coc-tailwindcss',
+          \ 'coc-texlab',
+          \ 'coc-tsserver',
+          \ 'coc-vimtex',
+          \ 'coc-xml',
+          \ 'coc-yaml',
+          \ 'coc-yank',
+          \ ]
+"}}}
+    " Coc-Actions{{{
+
+"}}}
+    " Coc-Bookmark{{{
+    nnoremap <leader>mm <Plug>(coc-bookmark-toggle)
+    nnoremap <leader>mi <Plug>(coc-bookmark-annotate)
+    nnoremap <leader>mn <Plug>(coc-bookmark-next)
+    nnoremap <leader>mp <Plug>(coc-bookmark-prev)
+    nnoremap <silent> <leader>ma :<c-u>CocList bookmark<cr>
+
+    let g:which_key_map.m = {
+          \ 'name' : '+bookmark'         ,
+          \ 'm'    : 'bookmark-toggle'   ,
+          \ 'i'    : 'bookmark-annotate' ,
+          \ 'n'    : 'bookmark-next'     ,
+          \ 'p'    : 'bookmark-prev'     ,
+          \ 'l'    : 'list-bookmarks'    ,
+          \ }
+    "}}}
+    " Coc-Css{{{
+
+"}}}
+    " Coc-Emmet{{{
+
+"}}}
+    " Coc-Explorer{{{
+    " CocExplorer functions{{{
+    function! ToggleCocExplorer()
+      execute 'CocCommand explorer --toggle --width=40 --sources=buffer+,file+ ' . getcwd()
+    endfunction
+"}}}
+    " Coc-Explorer presets{{{
+    let g:coc_explorer_global_presets = {
+          \   'dotvim': {
+          \      'root-uri': '~/.vim',
+          \   },
+          \   'dotfiles': {
+          \      'root-uri': '~/.dotfiles',
+          \   },
+          \   'Projects': {
+          \      'root-uri': '~/projects',
+          \   },
+          \   'floating': {
+          \     'position': 'floating',
+          \     'open-action-strategy': 'sourceWindow',
+          \   },
+          \   'floatingTop': {
+          \     'position': 'floating',
+          \     'floating-position': 'center-top',
+          \     'open-action-strategy': 'sourceWindow',
+          \   },
+          \   'floatingLeftside': {
+          \     'position': 'floating',
+          \     'floating-position': 'left-center',
+          \     'floating-width': 100,
+          \     'open-action-strategy': 'sourceWindow',
+          \   },
+          \   'floatingRightside': {
+          \     'position': 'floating',
+          \     'floating-position': 'right-center',
+          \     'floating-width': 100,
+          \     'open-action-strategy': 'sourceWindow',
+          \   },
+          \   'simplify': {
+          \     'file-child-template': '[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1]'
+          \   }
+          \ }
+"}}}
+    " CocExplorer mappings{{{
+    nmap <leader>ed :<C-u>CocCommand explorer --preset .dotfiles<CR>
+    nmap <leader>ep :<C-u>CocCommand explorer --preset Projects<CR>
+
+    if g:is_nvim
+      try
+        nmap <leader>ef :<C-u>CocCommand explorer --preset floating<CR>
+        nmap <leader>eT :<C-u>CocCommand explorer --preset floatingTop<CR>
+        nmap <leader>eL :<C-u>CocCommand explorer --preset floatingLeftside<CR>
+        nmap <leader>eR :<C-u>CocCommand explorer --preset floatingRightside<CR>
+      catch
+        echohl ErrorMsg
+      endtry
+    endif
+
+    " List all presets
+    nmap <leader>el :<C-u>CocList explPresets<CR>
+
+    nnoremap <silent> <leader>ee :<C-u>call ToggleCocExplorer()<CR>
+
+    augroup explorerCustom
+      autocmd!
+      autocmd FileType coc-explorer setlocal signcolumn=no
+      autocmd BufEnter * if (winnr("$") == 1 && &filetype ==# 'coc-explorer') | q | endif
+    augroup END
+
+    let g:which_key_map.e = {
+          \ 'name'     : '+coc-explorer'                       ,
+          \ 'e'        : 'toggle-coc-explorer'                 ,
+          \ 'd'        : 'open-dotfiles'                       ,
+          \ 'f'        : 'open-explorer-with-presets-floating' ,
+          \ 'p'        : 'open-projects'                       ,
+          \ }
+"}}}
+"}}}
+    " Coc-Git{{{
+
+"}}}
+    " Coc-Go{{{
+
+"}}}
+    " Coc-Gitignore{{{
+
+"}}}
+    " Coc-Highlight{{{
+
+"}}}
+    " Coc-Html{{{
+
+"}}}
+    " Coc-Java{{{
+
+"}}}
+    " Coc-Jedi{{{
+
+"}}}
+    " Coc-Json{{{
+
+"}}}
+    " Coc-Lists{{{
+    nnoremap <silent> <leader>lg  :<c-u>CocList diagnostics<cr>
+    nnoremap <silent> <leader>lc  :<c-u>CocList commands<cr>
+    nnoremap <silent> <leader>lj  :<c-u>CocNext<cr>
+    nnoremap <silent> <leader>lk  :<c-u>CocPrev<cr>
+    nnoremap <silent> <leader>ll  :<c-u>CocList<cr>
+    nnoremap <silent> <leader>lo  :<c-u>CocList outline<cr>
+    nnoremap <silent> <leader>lp  :<c-u>CocListResume<cr>
+    nnoremap <silent> <leader>ls  :<c-u>CocList -I symbols<cr>
+    nnoremap <silent> <leader>lx  :<c-u>CocList extensions<cr>
+    nnoremap <leader>la <Plug>(coc-codeaction)
+    vnoremap <leader>la <Plug>(coc-codeaction-selected)
+    nnoremap <leader>lA <Plug>(coc-codelens-action)
+    nnoremap <leader>ld <Plug>(coc-definition)
+    nnoremap <leader>lD <Plug>(coc-declaration)
+    nnoremap <leader>le <Plug>(coc-refactor)
+    nnoremap <leader>lf <Plug>(coc-format)
+    vnoremap <leader>lf <Plug>(coc-format-selected)
+    nnoremap <leader>lF <Plug>(coc-fix-current)
+    nnoremap <leader>lJ <Plug>(coc-diagnostic-next)
+    nnoremap <leader>lK <Plug>(coc-diagnostic-prev)
+    nnoremap <leader>lI <Plug>(coc-diagnostic-info)
+    nnoremap <leader>lm <Plug>(coc-implementation)
+    nnoremap <leader>lr <Plug>(coc-references)
+    nnoremap <leader>lR <Plug>(coc-rename)
+    nnoremap <leader>lt <Plug>(coc-type-definition)
+    nnoremap <leader>lv <Plug>(coc-range-select)
+    vnoremap <leader>lv <Plug>(coc-range-select)
+
+    let g:which_key_map.l = {
+      \ 'name' : '+coc-lists'                          ,
+      \ 'a'    : 'code-action'                         ,
+      \ 'A'    : 'codelens-action'                     ,
+      \ 'c'    : 'show-commands'                       ,
+      \ 'd'    : 'jump-to-definition'                  ,
+      \ 'D'    : 'jump-to-declaration'                 ,
+      \ 'e'    : 'open-refactor-windows'               ,
+      \ 'f'    : 'format'                              ,
+      \ 'F'    : 'fix-code'                            ,
+      \ 'g'    : 'show-all-diagnostics'                ,
+      \ 'j'    : 'do-default-action-for-next-item'     ,
+      \ 'k'    : 'do-default-action-for-previous-item' ,
+      \ 'I'    : 'diagnostic-info (LSP)'               ,
+      \ 'J'    : 'diagnostic-next (LSP)'               ,
+      \ 'K'    : 'diagnostic-prev (LSP)'               ,
+      \ 'l'    : 'lists'                               ,
+      \ 'm'    : 'jump-to-implementation'              ,
+      \ 'o'    : 'find-symbol-current-document'        ,
+      \ 'p'    : 'resume-latest-coc-list'              ,
+      \ 'r'    : 'jump-to-references'                  ,
+      \ 'R'    : 'rename-symbol'                       ,
+      \ 's'    : 'search-workspace-symbol'             ,
+      \ 't'    : 'jump-to-type-definition'             ,
+      \ 'v'    : 'range-select'                        ,
+      \ 'x'    : 'manage-extensions'                   ,
+      \ }
+"}}}
+    " Coc-Pairs{{{
+
+"}}}
+    " Coc-Phpactor{{{
+
+"}}}
+    " Coc-Phpls{{{
+
+"}}}
+    " Coc-Powershell{{{
+
+"}}}
+    " Coc-Prettier{{{
+
+"}}}
+    " Coc-Project{{{
+
+"}}}
+    " Coc-Python{{{
+
+"}}}
+    " Coc-R-Lsp{{{
+
+"}}}
+    " Coc-Syntax{{{
+
+"}}}
+    " Coc-Snippets{{{
+
+"}}}
+    " Coc-Sql{{{
+
+"}}}
+    " Coc-Texlab{{{
+
+"}}}
+    " Coc-Tsserver{{{
+
+"}}}
+    " Coc-Vimtex{{{
+
+"}}}
+    " Coc-Xml{{{
+
+"}}}
+    " Coc-Yaml{{{
+
+"}}}
+    " Coc-Yank{{{
+
+"}}}
+  else
+    let g:coc_disable_startup_warning = 1
+  endif
+endif
+"}}}
 " Fzf.vim"{{{
 " https://github.com/junegunn/fzf.vim.git
 if isdirectory(expand('~/.vim/plugged/fzf.vim/'))
@@ -406,6 +690,67 @@ if isdirectory(expand('~/.vim/plugged/nerdtree/'))
   let g:netrw_banner                = 0
   let g:netrw_liststyle             = 3
   let g:netrw_browse_split          = 4
+"}}}
+endif
+"}}}
+" Vim-which-key{{{
+" https://github.com/liuchengxu/vim-which-key.git
+if isdirectory(expand('~/.vim/plugged/vim-which-key/'))
+  call which_key#register(',', "g:which_key_map")
+  nnoremap <silent> <leader> :<c-u>WhichKey ','<cr>
+  nnoremap <silent> <localleader> :<c-u>WhichKey '\'<cr>
+  let g:which_key_map = {
+    \ 'name' : '+main',
+    \ ','    : 'toggle/hlsearch',
+    \ ';'    : 'toggle/number',
+    \ 'b'    : 'Fold all buffers',
+    \ }
+
+  " which_key_map leader"
+  let g:which_key_map[','] = {
+    \ 'name': '+menu'
+    \ }
+
+  " Various"
+  let g:which_key_map['v'] = {
+    \ 'name': '+various',
+    \ 'p': 'spell',
+    \ }
+
+  " Buffers{{{
+  let g:which_key_map.b = {
+    \ 'name' : '+buffer'            ,
+    \ '1' : ['b1'                   , 'buffer 1']                      ,
+    \ '2' : ['b2'                   , 'buffer 2']                      ,
+    \ '3' : ['b3'                   , 'buffer 3']                      ,
+    \ '4' : ['b4'                   , 'buffer 4']                      ,
+    \ '5' : ['b5'                   , 'buffer 5']                      ,
+    \ '6' : ['b6'                   , 'buffer 6']                      ,
+    \ '7' : ['b7'                   , 'buffer 7']                      ,
+    \ '8' : ['b8'                   , 'buffer 8']                      ,
+    \ '9' : ['b9'                   , 'buffer 9']                      ,
+    \ 'b' : ['Buffers'              , 'fzf-buffer']                    ,
+    \ 'B' : ['ls<cr>:b<space>'      , 'buffers-list']                  ,
+    \ 'd' : ['bd'                   , 'delete-buffer']                 ,
+    \ 'D' : ['bw'                   , 'wipe-buffer']                   ,
+    \ 'C' : ['tabclose'             , 'close-single-tab']              ,
+    \ 'f' : ['bfirst'               , 'first-buffer']                  ,
+    \ 'h' : ['sp'                   , 'horizontally-split-buffer']     ,
+    \ 'l' : ['blast'                , 'last-buffer']                   ,
+    \ 'n' : ['bnext'                , 'next-buffer']                   ,
+    \ 'o' : ['bufdo normal! zM<cr>' , 'decrease-all-buffer-foldlevel'] ,
+    \ 'p' : ['bprevious'            , 'previous-buffer']               ,
+    \ 'Q' : ['qa'                   , 'exit-all-buffer']               ,
+    \ 's' : ['Startify'             , 'startify-buffer']               ,
+    \ 't' : ['tabedit'              , 'open-new-tab']                  ,
+    \ 'T' : ['tabs'                 , 'list-open-tabs']                ,
+    \ 'v' : ['vsp'                  , 'vertically-split-buffer']       ,
+    \ 'w' : ['w'                    , 'save-buffer']                   ,
+    \ 'W' : ['wa'                   , 'save-all-buffer']               ,
+    \ 'x' : ['bp\|bd #<cr>'         , 'switch-buffer']                 ,
+    \ '#' : ['b#'                   , 'recent-buffer']                 ,
+    \ '?' : ['b <c-d>'              , 'show-buffer-commands']          ,
+    \ }
 "}}}
 endif
 "}}}

@@ -1,16 +1,26 @@
+# This Dockerfile is for building a developement environment only
+# It's note for any distribution / production usage
+#
+# Please note that it'll use about 1.2 GB disk space
+# and about 15 minutes to build this image
+# it depends on your hardware.
+
 ARG version buster
 FROM debian:${version:-latest}
 
-MAINTAINER ca971
-
-LABEL Description="ca971 Debian For Dev"
+LABEL maintainer="ca971 <contact@ca971.dev>"
+LABEL name="PaaS-docker"
+LABEL version="latest"
 
 # Non Interactive MODE
 ENV DEBIAN_FRONTEND noninteractive
 ENV DEBCONF_NONINTERACTIVE_SEEN true
 
 # Set shell command by SHELL [ “/bin/bash”, “-l”, “-c” ] and simply call RUN ....
-SHELL [ "/bin/bash", "-l", "-c" ]
+#SHELL [ "/bin/bash", "-l", "-c" ]
+
+# Set the SHELL to bash with pipefail option
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Non privileged user
 ARG USER_NAME=ca971
@@ -21,16 +31,27 @@ ARG USER_GID=$USER_UID
 COPY sources.list /etc/apt/sources.list
 
 RUN \
-    && export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE="1" \
-    && groupadd --gid $USER_GID $USER_NAME \
-    && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USER_NAME \
+    export APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE="1" \
     && apt-get update \
-    && apt-get install -y sudo wget \
-    && echo $USER_NAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USER_NAME \
-    && chmod 0440 /etc/sudoers.d/$USER_NAME
+    && apt-get install -y sudo wget
 
-# Add a non-privileged user
-#USER $USER_NAME
+# Add a group for $USER_NAME
+RUN groupadd --gid $USER_GID $USER_NAME
+
+# Add a non-root User
+RUN useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USER_NAME
+
+# Set Sudoers for $USER_NAME
+RUN echo $USER_NAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USER_NAME
+
+# Protect $USER_NAME sudo file
+RUN chmod 0440 /etc/sudoers.d/$USER_NAME
+
+# Set permissions for $USER_NAME directory
+RUN chown $USER_NAME:$USER_NAME -R "/home/$USER_NAME"
+
+# User "$USER_NAME" as non-root user
+USER $USER_NAME
 
 # Install Oh-my-zsh with zsh-in-docker
 # https://github.com/deluan/zsh-in-docker/blob/master/Dockerfile
@@ -82,15 +103,35 @@ RUN eval "$(pyenv virtualenv-init -)"
 RUN git clone https://github.com/rbenv/rbenv.git ~/.rbenv
 
 # Install nvm and default Node version
-ENV NODE_VERSION 16.4.2
+#ENV NVM_DIR ~/
+#ENV NODE_VERSION 16.4.2
+#ENV NODE_LTS_VERSION 14.17.3
+
+#RUN curl --silent -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
+#RUN nvm install $NODE_VERSION \
+#  && nvm alias default $NODE_VERSION \
+#  && nvm use default \
+#  && nvm install $NODE_LTS_VERSION \
+#  && nvm use $NODE_LTS_VERSION
+
+# Install nvm and default Node version
+ENV NODE_VERSION node
 ENV NODE_LTS_VERSION 14.17.3
 
-RUN curl --silent -o- https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash
-RUN nvm install $NODE_VERSION \
+RUN echo 'export NVM_DIR="$HOME/.nvm"'                                       >> "$HOME/.bashrc"
+RUN echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> "$HOME/.bashrc"
+RUN echo '[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion" # This loads nvm bash_completion' >> "$HOME/.bashrc"
+
+# nodejs and tools
+RUN bash -c 'source $HOME/.nvm/nvm.sh \
+  && nvm install $NODE_VERSION \
   && nvm alias default $NODE_VERSION \
   && nvm use default \
   && nvm install $NODE_LTS_VERSION \
-  && nvm use $NODE_LTS_VERSION
+  && nvm use $NODE_LTS_VERSION \
+  && npm install -g yarn \
+  && npm install --prefix "$HOME/.nvm/"'
+
 
 # Install Homebrew for linux
 #ENV PATH=$HOME/.linuxbrew/bin:$PATH
@@ -115,8 +156,13 @@ RUN apt-get clean -y \
   && apt-get autoremove -y \
   && rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/*
 
-ADD . $HOME/dotfiles-server
+# Tells systemd that it's running inside a Docker container environment
+ENV container docker
+
+ADD . $HOME/code
+
+WORKDIR $HOME/code
 
 CMD ["/bin/zsh","-l"]
 
-WORKDIR ~
+# vim: set ft=dockerfile:

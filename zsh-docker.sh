@@ -92,15 +92,16 @@ install_dependencies() {
 
     *)
       $Sudo apt-get update
-      #$Sudo apt-get -y install git curl zsh locales
-      $Sudo apt-get -y install \
+      $Sudo apt-get --quiet --verbose-versions --yes --no-install-recommends install \
         apt-utils \
         autoconf \
         automake \
+        bash-completion \
         bind9-host \
         bsdmainutils \
         build-essential \
         ca-certificates \
+        coreutils \
         cowsay \
         dfc \
         dirmngr \
@@ -114,6 +115,7 @@ install_dependencies() {
         git-core \
         htop \
         hwinfo \
+        jq \
         libbz2-dev \
         libffi-dev \
         libgdbm-dev \
@@ -147,21 +149,21 @@ install_dependencies() {
         sl \
         socat \
         software-properties-common \
+        ssh \
         strace \
         sysstat \
         tcpdump \
         tmux \
         unzip \
         unrar \
+        util-linux \
         vim \
         w3m \
         whois \
         xz-utils \
         zip \
         zlib1g-dev \
-        zsh \
-
-      $Sudo for i in 1 2 3 4 5 6 7 8; do mkdir -p /usr/share/man/man$i; done
+        zsh
       if [ "$VERSION" != "14.04" ]; then
         $Sudo apt-get -y install locales-all
       fi
@@ -169,6 +171,7 @@ install_dependencies() {
       $Sudo locale-gen --purge fr_FR.UTF-8
       $Sudo update-locale LANG=fr_FR.UTF-8
       $Sudo echo "Europe/Paris" > /etc/timezone
+      $Sudo mkdir -p /usr/share/man/man{1..9}
 
   esac
 }

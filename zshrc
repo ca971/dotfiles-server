@@ -101,6 +101,17 @@ fi
 
 # Fzf
 # ----------------------------------------------------------------------------
+#export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
+if command -v fzf > /dev/null; then
+  [ -n "$NVIM_LISTEN_ADDRESS" ] && export FZF_DEFAULT_OPTS=" \
+    --ansi --preview-window 'right:60%' --layout reverse --margin=1,4 --preview 'bat --color=always --style=header,grid --line-range :300 {}'"
+    #--layout=reverse --no-height
+    #--color=fg:#c0c5ce,bg:#212121,hl:#808080,fg+:#e6e6e6,bg+:#3b3b3b,hl+:#f7c662 \
+    #--color=info:#f7c662,prompt:#6699cc,pointer:#a6bc69,marker:#a6bc69,spinner:#f7c662,header:#6699cc"
+
+  export FZF_BASE="${HOME}/.fzf"
+fi
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Local
