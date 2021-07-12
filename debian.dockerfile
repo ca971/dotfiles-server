@@ -107,6 +107,7 @@ RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
   && brew tap jakewmeyer/geo \
   && brew tap neovim/neovim \
   && brew tap universal-ctags/universal-ctags \
+  && brew tap homebrew/aliases \
   && brew update && brew install \
   nvm \
   bat \
