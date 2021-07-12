@@ -35,13 +35,12 @@ command -v fasd > /dev/null && eval "$(fasd --init auto)"
 # ----------------------------------------------------------------------------
 test -d ~/.linuxbrew && eval $(~/.linuxbrew/bin/brew shellenv)
 
-# NVM via Homebrew
+#RUN nvm install node
 # ----------------------------------------------------------------------------
-if command -v nvm > /dev/null; then
- export NVM_DIR="$HOME/.nvm"
-  [ -s "/root/.linuxbrew/opt/nvm/nvm.sh" ] && . "/root/.linuxbrew/opt/nvm/nvm.sh"  # This loads nvm
-  [ -s "/root/.linuxbrew/opt/nvm/etc/bash_completion.d/nvm" ] && . "/root/.linuxbrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
-fi
+export NVM_DIR="$HOME/.nvm"
+
+[ -s "/root/.linuxbrew/opt/nvm/nvm.sh" ] && . "/root/.linuxbrew/opt/nvm/nvm.sh"  # This loads nvm
+[ -s "/root/.linuxbrew/opt/nvm/etc/bash_completion.d/nvm" ] && . "/root/.linuxbrew/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 
 # Linux
 # ---------------------------------------------------------

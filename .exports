@@ -38,14 +38,6 @@ unset p paths
 
 # Editor
 # =============================================================================
-#if [[ -n $SSH_CONNECTION ]]; then
-#  command -v nvim &>/dev/null && \
-#    export EDITOR="nvim" VISUAL="$EDITOR"
-#else
-#  command -v vim &>/dev/null && \
-#    export EDITOR="vim" VISUAL="$EDITOR"
-#fi
-
 command -v nvim > /dev/null && export EDITOR="nvim" VISUAL="$EDITOR"
 
 # Exa (121, 75, 33)
@@ -64,15 +56,15 @@ command -v exa &>/dev/null && \
 # fzf
 # =============================================================================
 #export FZF_DEFAULT_OPTS="--layout=reverse --height 40%"
-if command -v fzf > /dev/null; then
-  [ -n "$NVIM_LISTEN_ADDRESS" ] && export FZF_DEFAULT_OPTS=" \
-    --ansi --preview-window 'right:60%' --layout reverse --margin=1,4 --preview 'bat --color=always --style=header,grid --line-range :300 {}'"
-    #--layout=reverse --no-height
-    #--color=fg:#c0c5ce,bg:#212121,hl:#808080,fg+:#e6e6e6,bg+:#3b3b3b,hl+:#f7c662 \
-    #--color=info:#f7c662,prompt:#6699cc,pointer:#a6bc69,marker:#a6bc69,spinner:#f7c662,header:#6699cc"
 
-  export FZF_BASE="${HOME}/.fzf"
-fi
+export FZF_BASE="${HOME}/.fzf"
+
+[ -n "$NVIM_LISTEN_ADDRESS" ] && export FZF_DEFAULT_OPTS=" \
+  --ansi --preview-window 'right:60%' --layout reverse --margin=1,4 --preview 'bat --color=always --style=header,grid --line-range :300 {}'"
+  #--layout=reverse --no-height
+  #--color=fg:#c0c5ce,bg:#212121,hl:#808080,fg+:#e6e6e6,bg+:#3b3b3b,hl+:#f7c662 \
+  #--color=info:#f7c662,prompt:#6699cc,pointer:#a6bc69,marker:#a6bc69,spinner:#f7c662,header:#6699cc"
+
 
 # Gem
 # =============================================================================
@@ -108,14 +100,6 @@ if command -v node &>/dev/null; then
   fi
 fi
 
-# NVM
-# =============================================================================
-#if command -v nvm &>/dev/null; then
-#  export NVM_DIR="${HOME}/.nvm"
-#  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # This loads nvm
-#  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-#fi
-
 # Pager
 # =============================================================================
 if command -v most &>/dev/null; then
@@ -139,11 +123,11 @@ export LESS_TERMCAP_us=$'\e[01;32m'      # begin underline
 
 # Python
 # =============================================================================
-if command -v python > /dev/null; then
-  export PYTHONVERSION=$(python -V | cut -d' ' -f2 | cut -d '.' -f1-2)
-  export PYTHONIOENCODING="UTF-8"
-  export PYTHONPATH="$HOME/.pyenv/versions/python_3/lib/python$PYTHONVERSION/site-packages"
-fi
+#if command -v python > /dev/null; then
+#  export PYTHONVERSION=$(python -V | cut -d' ' -f2 | cut -d '.' -f1-2)
+#  export PYTHONIOENCODING="UTF-8"
+#  export PYTHONPATH="$HOME/.pyenv/versions/python_3/lib/python$PYTHONVERSION/site-packages"
+#fi
 
 # pyenv-virtualenv: prompt changing will be removed from future release
 command -v pyenv-virtualenv-init &> /dev/null && export PYENV_VIRTUALENV_DISABLE_PROMPT=1
