@@ -2,18 +2,96 @@
 	name = ca971
 	email = discretgwad@gmail.com
 
+[core]
+	editor = nvim
+	pager = less -FRX
+	excludesfile = ~/.gitignore ~/.gitignore_global
+
+[gist]
+	private = yes
+
+[init]
+	defaultBranch = main
+
+[branch "main"]
+	remote = origin
+	merge = refs/heads/main
+
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+
+[log]
+	decorate = short
+
+[push]
+	default = current
+
+[pull]
+	default = simple
+
+[rerere]
+	enabled = true
+
 [alias]
 	name = config --get user.name
-  email = config --get user.email
+	email = config --get user.email
 	ba = branch -a
 	br = branch
 	branches = branch -a
 	ci = commit
+	cia = commit --amend
+	cim = commit -m
+	civ = commit -v
 	co = checkout
+	cp = cherry-pick
+	config-to-push-all-branches = config --add remote.origin.push '+refs/heads/*:refs/heads/*'
+	config-to-push-all-tags = config --add remote.origin.push '+refs/tags/*:refs/tags/*'
+	d = diff
+	dc = diff --cached
+	diffc = diff --cached
+	forkup = pull --rebase upstream
+	h = stash
+	hs = stash save
+	last = log -1
+	latest = for-each-ref --sort=committerdate refs/heads/ --format='%(committerdate:short) %(refname:short)'
 	ls = ls-files
-	remotes = remote -v
+	newb = checkout -b
+	quicklog = log --oneline --decorate -10 --pretty=format:'%C(yellow)%h%C(reset)%C(auto)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'
+	quicklog-long = log --oneline --decorate --pretty=format:'%C(yellow)%h%C(reset)%C(auto)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset'
+	r = remote
+	rb = rebase
+	rl = reflog
+	rv = remote -v
+	rewind-one = reset --hard HEAD^
 	s = status
 	st = status
+	sta = stash
+	svnci = svn dcommit
+	svnprep = rebase -i git-svn
+	svnup = svn rebase
+	today = diff --stat 'HEAD@{midnight}'
+	tree = log --graph --oneline --all
+	undo = reset --mixed HEAD^
+	unstage = reset HEAD
+	up = pull --rebase origin
+	yesterday = diff --stat 'HEAD@{yesterday}' 'HEAD@{midnight}'
 
-[core]
-	excludesfile = ~/.gitignore_global
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+	ui = auto
+[color "diff"]
+	meta = blue
+	frag = black
+	old = red
+	new = green
+[color "status"]
+	added = green
+	changed = yellow
+	untracked = cyan
+[color "branch"]
+	current = yellow reverse
+	local = yellow
+	remote = green

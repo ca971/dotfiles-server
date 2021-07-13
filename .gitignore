@@ -6,3 +6,5 @@
 .zsh-completions/
 
 *.dockerfile.*
+
+*rsa

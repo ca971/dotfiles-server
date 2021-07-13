@@ -116,6 +116,7 @@ install_dependencies() {
         htop \
         hwinfo \
         jq \
+        less \
         libbz2-dev \
         libffi-dev \
         libgdbm-dev \
@@ -387,5 +388,7 @@ if [ ! -e "$HOME/.zshlocal" ]; then
   echo -e "# If you want a different color, run ~/bin/c.256-colors and replace $color below:\ncolorprompt \"38;5;$color\"" >"$HOME/.zshlocal"
   echo "Chose a random prompt color. Edit $HOME/.zshlocal to change it."
 fi
+
+nvim +PlugUpdate +PlugUpgrade +qall
 
 echo "All done."

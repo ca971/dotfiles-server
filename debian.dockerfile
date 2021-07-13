@@ -70,23 +70,16 @@ RUN /tmp/zsh-docker.sh \
 
 WORKDIR /tmp
 
-ENV PYTHON_VERSION 3.9.6
-
 # Install Python from source
-RUN wget -P /tmp https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tgz \
-  && tar xf Python-$PYTHON_VERSION.tgz \
-  && cd Python-$PYTHON_VERSION/ \
-  && ./configure --enable-optimizations \
-  && make -j 2 \
-  && sudo make altinstall
-
-# Set python3 and pip3 as default python
-RUN update-alternatives --install /usr/bin/python python /usr/local/bin/python${PYTHON_VERSION%.*} 2
-RUN update-alternatives --install /usr/bin/pip pip /usr/local/bin/pip${PYTHON_VERSION%.*} 2
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
-RUN update-alternatives --install /usr/bin/pip pip /usr/bin/pip2.7 1
+#RUN wget -P /tmp https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tgz \
+#  && tar xf Python-$PYTHON_VERSION.tgz \
+#  && cd Python-$PYTHON_VERSION/ \
+#  && ./configure --enable-optimizations \
+#  && make -j 2 \
+#k  && sudo make altinstall
 
 # Install pyenv, pyenv-virtualenv and default python version
+ENV PYTHON_VERSION 3.9.6
 ENV PYTHONDONTWRITEBYTECODE true
 ENV PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV true
 
@@ -101,6 +94,7 @@ RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
     ~/.nvm \
     ~/.pyenv \
     ~/.rbenv \
+    ~/.ssh \
   && ln -s ../Homebrew/bin/brew ~/.linuxbrew/bin \
   && eval $(~/.linuxbrew/bin/brew shellenv) \
   && brew --version \
@@ -117,11 +111,22 @@ RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
   rbenv \
   bat \
   fzf \
+  grc \
+  git-credential-manager \
   nvm
 
+# Set python3 and pip3 as default python
+RUN update-alternatives --install /usr/bin/python python $HOME/.pyenv/versions/bin/python 3
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 2
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python2 1
+
+#RUN update-alternatives --install /usr/bin/python python /usr/local/bin/python${PYTHON_VERSION%.*} 2
+#RUN update-alternatives --install /usr/bin/pip pip /usr/local/bin/pip${PYTHON_VERSION%.*} 2
+#RUN update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
+#RUN update-alternatives --install /usr/bin/pip pip /usr/bin/pip2 1
+
 RUN \
-    . ~/.linuxbrew/opt/nvm/.nvm.sh \
-  && nvm install node \
+  nvm install node \
   && nvm alias default node \
   && nvm use default \
   && nvm install --lts \
@@ -137,6 +142,21 @@ RUN \
     pip install --upgrade pip \
     pip install -r /tmp/requirements.txt
 
+
+COPY id_rsa /tmp
+
+# SSH
+RUN \
+    eval $(ssh-agent -s) \
+    && mkdir ~/.ssh \
+    && mv id_rsa ~/.ssh \
+    && echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config \
+    && cat /etc/ssh_config \
+    && chmod go-w /root \
+    && chmod 700 /root/.ssh \
+    && chmod 600 /root/.ssh/id_rsa \
+    && ssh-add ~/.ssh/id_rsa
+#&& git clone <your-git-repo-ssh-url>
 
 # Clean and erase apt cache
 RUN apt-get clean -y \
