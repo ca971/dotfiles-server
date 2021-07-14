@@ -18,6 +18,32 @@ else
   let s:cache_dir = '~/.vim/cache/'
 endif
 "}}}
+" Variables{{{
+" Python 2
+if executable('python2')
+  let g:python_host_prog = '/usr/bin/python2'
+endif
+
+" Python 3
+if executable('python3')
+  let g:python3_host_prog = $HOME . '/.pyenv/versions/python_3/bin/python'
+endif
+
+" Ruby
+if executable('ruby)
+  let g:ruby_host_prog = $HOME . '/.rbenv/versions/3.0.2/bin/ruby'
+endif
+
+" Perl
+if executable('perl')
+  let g:perl_host_prog = '/usr/bin/perl'
+endif
+
+" NodeJs for Coc.nvim
+if executable('node')
+  let g:coc_node_path = $HOME . '/.nvm/bin/node'
+endif
+"}}}
 " Functions"{{{
 " function! source_file_if_exists(file)"{{{
 function! Source_file_if_exists(file) abort

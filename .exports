@@ -129,12 +129,21 @@ export LESS_TERMCAP_us=$'\e[01;32m'      # begin underline
 #  export PYTHONPATH="$HOME/.pyenv/versions/python_3/lib/python$PYTHONVERSION/site-packages"
 #fi
 
+# Pyenv
+# =============================================================================
 # pyenv-virtualenv: prompt changing will be removed from future release
-#command -v pyenv-virtualenv-init &> /dev/null && export PYENV_VIRTUALENV_DISABLE_PROMPT=1
-#if command -v pyenv > /dev/null; then
-#  export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
-#  export PYTHON_CONFIGURE_OPTS="--enable-framework"
-#fi
+command -v pyenv-virtualenv-init &> /dev/null && export PYENV_VIRTUALENV_DISABLE_PROMPT=1
+
+if command -v pyenv > /dev/null; then
+  export PYENV_ROOT="~/.pyenv"
+  export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
+fi
+
+# Rbenv
+# =============================================================================
+if command -v rbenv > /dev/null; then
+  export RBENV_ROOT="~/.rbenv"
+fi
 
 # SSH
 # =============================================================================

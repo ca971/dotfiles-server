@@ -40,7 +40,7 @@ alias NUL='> /dev/null 2>&1'
 # Use exa, if it is available
 if command -v exa >/dev/null; then
   # general use
-  EXA_OPTIONS=''
+  EXA_OPTIONS='--icons'
   alias ll='exa -lGh'
   alias ls='exa -h $EXA_OPTIONS'
   alias lsa='exa -ah $EXA_OPTIONS'
