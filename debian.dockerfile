@@ -135,7 +135,8 @@ ENV RUBY_VERSION 3.0.2
 RUN \
     rbenv-alias --auto \
     && rbenv install $RUBY_VERSION \
-    && gem install bundler --no-ri --no-rdoc
+    && rbenv global $RUBY_VERSION \
+    && gem install bundler
 
 COPY id_rsa /tmp
 
