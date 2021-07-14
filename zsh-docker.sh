@@ -103,16 +103,17 @@ install_dependencies() {
         ca-certificates \
         coreutils \
         cowsay \
+        curl \
         dfc \
         dirmngr \
         exa \
         gnupg \
         gnupg2 \
-        curl \
         fasd \
         file \
         fontconfig \
         git-core \
+        grc \
         htop \
         hwinfo \
         jq \

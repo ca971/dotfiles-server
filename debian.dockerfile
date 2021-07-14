@@ -70,20 +70,6 @@ RUN /tmp/zsh-docker.sh \
 
 WORKDIR /tmp
 
-# Install Python from source
-#RUN wget -P /tmp https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tgz \
-#  && tar xf Python-$PYTHON_VERSION.tgz \
-#  && cd Python-$PYTHON_VERSION/ \
-#  && ./configure --enable-optimizations \
-#  && make -j 2 \
-#k  && sudo make altinstall
-
-# Install pyenv, pyenv-virtualenv and default python version
-ENV PYTHON_VERSION 3.9.6
-ENV PYTHONDONTWRITEBYTECODE true
-ENV PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV true
-
-COPY requirements.txt /tmp
 
 # Set PATH
 ENV PATH=~/.pyenv/shims:~/.pyenv/bin:~/.rbenv/shims:~/.rbenv/bin:~/.nvm/bin:/usr/local/rvm/bin:~/.linuxbrew/bin:$PATH:/usr/games
@@ -109,9 +95,9 @@ RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
   pyenv-virtualenv \
   pipenv \
   rbenv \
+  rbenv-aliases \
   bat \
   fzf \
-  grc \
   nvm
 
 RUN \
@@ -121,6 +107,13 @@ RUN \
   && nvm install --lts \
   && nvm use --lts \
   && npm install -g yarn
+
+# Install pyenv, pyenv-virtualenv and default python version
+ENV PYTHON_VERSION 3.9.6
+ENV PYTHONDONTWRITEBYTECODE true
+ENV PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV true
+
+COPY requirements.txt /tmp
 
 RUN \
     pyenv install $PYTHON_VERSION \
@@ -136,10 +129,13 @@ RUN update-alternatives --install /usr/bin/python python $HOME/.pyenv/versions/p
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 2
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python2 1
 
-#RUN update-alternatives --install /usr/bin/python python /usr/local/bin/python${PYTHON_VERSION%.*} 2
-#RUN update-alternatives --install /usr/bin/pip pip /usr/local/bin/pip${PYTHON_VERSION%.*} 2
-#RUN update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
-#RUN update-alternatives --install /usr/bin/pip pip /usr/bin/pip2 1
+# Install Rbenv
+ENV RUBY_VERSION 3.0.2
+
+RUN \
+    rbenv-alias --auto \
+    && rbenv install $RUBY_VERSION \
+    && gem install bundler --no-ri --no-rdoc
 
 COPY id_rsa /tmp
 
@@ -158,7 +154,8 @@ RUN \
 RUN apt-get clean -y \
   && apt-get autoclean -y \
   && apt-get autoremove -y \
-  && rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/*
+  && rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* \
+  && brew cleanup
 
 
 # Tells systemd that it's running inside a Docker container environment
