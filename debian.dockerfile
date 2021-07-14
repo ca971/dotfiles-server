@@ -101,7 +101,6 @@ RUN \
   && nvm use default \
   && nvm install --lts \
   && nvm use --lts \
-  && cd ~ && npm init \
   && npm install -g yarn
 
 # Install pyenv, pyenv-virtualenv and default python version
