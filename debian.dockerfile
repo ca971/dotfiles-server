@@ -112,18 +112,7 @@ RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
   bat \
   fzf \
   grc \
-  git-credential-manager \
   nvm
-
-# Set python3 and pip3 as default python
-RUN update-alternatives --install /usr/bin/python python $HOME/.pyenv/versions/bin/python 3
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 2
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python2 1
-
-#RUN update-alternatives --install /usr/bin/python python /usr/local/bin/python${PYTHON_VERSION%.*} 2
-#RUN update-alternatives --install /usr/bin/pip pip /usr/local/bin/pip${PYTHON_VERSION%.*} 2
-#RUN update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
-#RUN update-alternatives --install /usr/bin/pip pip /usr/bin/pip2 1
 
 RUN \
   nvm install node \
@@ -142,16 +131,23 @@ RUN \
     pip install --upgrade pip \
     pip install -r /tmp/requirements.txt
 
+# Set python3 and pip3 as default python
+RUN update-alternatives --install /usr/bin/python python $HOME/.pyenv/versions/python_3/bin/python 3
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 2
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python2 1
+
+#RUN update-alternatives --install /usr/bin/python python /usr/local/bin/python${PYTHON_VERSION%.*} 2
+#RUN update-alternatives --install /usr/bin/pip pip /usr/local/bin/pip${PYTHON_VERSION%.*} 2
+#RUN update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
+#RUN update-alternatives --install /usr/bin/pip pip /usr/bin/pip2 1
 
 COPY id_rsa /tmp
 
 # SSH
 RUN \
     eval $(ssh-agent -s) \
-    && mkdir ~/.ssh \
     && mv id_rsa ~/.ssh \
     && echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config \
-    && cat /etc/ssh_config \
     && chmod go-w /root \
     && chmod 700 /root/.ssh \
     && chmod 600 /root/.ssh/id_rsa \
