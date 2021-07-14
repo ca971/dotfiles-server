@@ -12,13 +12,14 @@ ENV DEBCONF_NONINTERACTIVE_SEEN true
 # Set shell command by SHELL [ “/bin/bash”, “-l”, “-c” ] and simply call RUN ....
 SHELL [ "/bin/bash", "-l", "-c" ]
 
-# Set the SHELL to bash with pipefail option
-#SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
 # Non privileged user
 ARG USER_NAME=ca971
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
+
+# Set PATH
+ENV PATH=~/.pyenv/shims:~/.pyenv/bin:~/.rbenv/shims:~/.rbenv/bin:~/.nvm/bin:/usr/local/rvm/bin:~/.linuxbrew/bin:$PATH:/usr/games
+ENV FZF_BASE=$HOME/.fzf
 
 # Add sources.list
 COPY bullseye-sources.list /etc/apt/sources.list
@@ -47,8 +48,6 @@ RUN chown $USER_NAME:$USER_NAME -R "/home/$USER_NAME"
 #USER $USER_NAME
 
 # Install Oh-my-zsh with zsh-in-docker
-# https://github.com/deluan/zsh-in-docker/blob/master/Dockerfile
-# RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.1.1/zsh-in-docker.sh)" -- \
 COPY zsh-docker.sh /tmp
 RUN /tmp/zsh-docker.sh \
     -t https://github.com/denysdovhan/spaceship-prompt \
@@ -69,10 +68,6 @@ RUN /tmp/zsh-docker.sh \
     -a 'bindkey "\$terminfo[kcud1]" history-substring-search-down'
 
 WORKDIR /tmp
-
-
-# Set PATH
-ENV PATH=~/.pyenv/shims:~/.pyenv/bin:~/.rbenv/shims:~/.rbenv/bin:~/.nvm/bin:/usr/local/rvm/bin:~/.linuxbrew/bin:$PATH:/usr/games
 
 RUN git clone https://github.com/Homebrew/brew ~/.linuxbrew/Homebrew \
   && mkdir \
@@ -106,6 +101,7 @@ RUN \
   && nvm use default \
   && nvm install --lts \
   && nvm use --lts \
+  && cd ~ && npm init \
   && npm install -g yarn
 
 # Install pyenv, pyenv-virtualenv and default python version
@@ -157,7 +153,6 @@ RUN apt-get clean -y \
   && apt-get autoremove -y \
   && rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* \
   && brew cleanup
-
 
 # Tells systemd that it's running inside a Docker container environment
 ENV container docker
