@@ -125,8 +125,9 @@ fi
 
 # Grc
 # =============================================================================
-GRC="$(which grc)"
-if [ "$TERM" != dumb ] && [ -n "$GRC" ]; then
+if command -v grc > /dev/null; then
+  GRC="$(which grc)"
+
   alias colourify="$GRC -es --colour=auto"
   alias blkid='colourify blkid'
   alias configure='colourify ./configure'

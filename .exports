@@ -87,7 +87,7 @@ fi
 # Mysql
 # =============================================================================
 if command -v mysql &>/dev/null; then
-  if [ -d "$XDG_DATA_HOME/share/mysql"]; then
+  if [ -d "$XDG_DATA_HOME/share/mysql" ]; then
     export MYSQL_HISTFILE="$XDG_DATA_HOME/share/mysql/.mysql_history"
   fi
 fi
@@ -95,7 +95,7 @@ fi
 # Node
 # =============================================================================
 if command -v node &>/dev/null; then
-  if [ -d "$XDG_DATA_HOME/share/node"]; then
+  if [ -d "$XDG_DATA_HOME/share/node" ]; then
     export NODE_HISTFILE="$XDG_DATA_HOME/share/node/.node_history"
   fi
 fi
